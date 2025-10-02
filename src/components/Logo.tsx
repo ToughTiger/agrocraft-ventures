@@ -10,7 +10,7 @@ const Logo = ({ className }: { className?: string }) => {
           <path d="M30 100 Q-20 60 30 20 Q80 60 30 100" fill="hsl(var(--primary) / 0.7)" />
           <path d="M70 100 Q120 60 70 20 Q20 60 70 100" fill="hsl(var(--primary) / 0.7)" />
         </g>
-        <text x="200" y="140" fontFamily="Montserrat" fontSize="24" fill="hsl(var(--primary))" textAnchor="middle">Agrocraft Ventures</text>
+        <text x="200" y="140" fontFamily="Montserrat" fontSize="36" fontWeight="bold" fill="hsl(var(--primary))" textAnchor="middle">Agrocraft Ventures</text>
         <text x="200" y="170" fontFamily="Montserrat" fontSize="16" fill="hsl(var(--primary))" textAnchor="middle">Harvesting Innovation</text>
       </svg>
     </Link>
