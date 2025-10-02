@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "turmeric-powder",
+      "description": "A vibrant yellow pile of turmeric powder.",
+      "imageUrl": "https://images.unsplash.com/photo-1698556735172-1b5b3cd9d2ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx0dXJtZXJpYyUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTU5OTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "turmeric powder"
+    },
+    {
+      "id": "chili-powder",
+      "description": "A mound of bright red chili powder.",
+      "imageUrl": "https://images.unsplash.com/photo-1702041295471-01b73fd39907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsaSUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTYxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chili powder"
+    },
+    {
+      "id": "coriander-powder",
+      "description": "Light brown coriander powder in a bowl.",
+      "imageUrl": "https://images.unsplash.com/photo-1750472878210-0778dcbcc5bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb3JpYW5kZXIlMjBwb3dkZXJ8ZW58MHx8fHwxNzU5Mzk2MTY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coriander powder"
+    },
+    {
+      "id": "cumin-seeds",
+      "description": "A close-up of cumin seeds.",
+      "imageUrl": "https://images.unsplash.com/photo-1622222250466-08eeb5f9999e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjdW1pbiUyMHNlZWRzfGVufDB8fHx8MTc1OTM5NjE2NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cumin seeds"
+    },
+    {
+      "id": "wheat-flour",
+      "description": "A pile of fine white wheat flour.",
+      "imageUrl": "https://images.unsplash.com/photo-1702061895070-15d7972d3eef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3aGVhdCUyMGZsb3VyfGVufDB8fHx8MTc1OTM1NDg4N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wheat flour"
+    },
+    {
+      "id": "gram-flour",
+      "description": "A pile of yellowish gram flour (besan).",
+      "imageUrl": "https://images.unsplash.com/photo-1586137712370-9b450509c587?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxncmFtJTIwZmxvdXJ8ZW58MHx8fHwxNzU5Mzk2MTY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gram flour"
+    },
+    {
+      "id": "black-pepper",
+      "description": "Whole black peppercorns.",
+      "imageUrl": "https://images.unsplash.com/photo-1641661548431-87172338d58c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxibGFjayUyMHBlcHBlcmNvcm5zfGVufDB8fHx8MTc1OTM5NjE2NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "black peppercorns"
+    },
+    {
+      "id": "cinnamon-sticks",
+      "description": "A bundle of cinnamon sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1632644365325-3b4246e9b9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaW5uYW1vbiUyMHN0aWNrc3xlbnwwfHx8fDE3NTkzOTYxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cinnamon sticks"
+    }
+  ]
 }
