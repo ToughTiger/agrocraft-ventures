@@ -19,7 +19,7 @@ export function AdminSidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-background">
-      <div className="h-16 flex items-center px-6 border-b">
+      <div className="h-24 flex items-center px-6 border-b">
         <Logo />
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">
