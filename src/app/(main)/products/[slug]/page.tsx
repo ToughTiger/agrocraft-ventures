@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendedProducts } from "@/components/RecommendedProducts";
+import { formatCurrency } from "@/lib/utils";
 
 // Client component for interactivity
 function AddToCartButton({ productId }: { productId: string }) {
@@ -39,7 +40,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <div>
             <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
             <h1 className="font-headline text-4xl font-bold mb-4">{product.name}</h1>
-            <p className="text-3xl font-semibold mb-6">${product.price.toFixed(2)}</p>
+            <p className="text-3xl font-semibold mb-6">{formatCurrency(product.price)}</p>
             <Separator className="my-6" />
             <p className="text-muted-foreground leading-relaxed mb-8">{product.description}</p>
             

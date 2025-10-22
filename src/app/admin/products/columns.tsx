@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Product } from "@/lib/types"
+import type { Product } from "@prisma/client"
+import { formatCurrency } from "@/lib/utils"
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -34,12 +35,8 @@ export const columns: ColumnDef<Product>[] = [
     header: () => <div className="text-right">Price</div>,
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(price)
  
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-right font-medium">{formatCurrency(price)}</div>
     },
   },
   {

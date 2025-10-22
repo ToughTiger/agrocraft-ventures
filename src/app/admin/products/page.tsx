@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { columns } from "./columns"
 import { getProducts } from "@/lib/queries"
-import type { Product } from "@/lib/types"
+import type { Product } from "@prisma/client"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -68,7 +68,7 @@ function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {render(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>

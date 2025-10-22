@@ -1,14 +1,16 @@
-export type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  imageHint: string;
-  stock: number;
-  category: string;
+import type { Product as PrismaProduct, User as PrismaUser, Order as PrismaOrder, Customer as PrismaCustomer } from '@prisma/client';
+
+export type Product = PrismaProduct;
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    browsingHistory: string[]; // for AI, simple array of product slugs
+    purchaseHistory: string[]; // for AI, simple array of product slugs
 };
+export type Order = PrismaOrder;
+export type Customer = PrismaCustomer;
+
 
 export type CartItem = {
   productId: string;
@@ -17,40 +19,4 @@ export type CartItem = {
 
 export type Cart = {
   items: CartItem[];
-};
-
-export type Order = {
-  id: string;
-  userId: string;
-  items: {
-    productId: string;
-    quantity: number;
-    price: number;
-  }[];
-  total: number;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
-  createdAt: Date;
-  shippingAddress: {
-    name: string;
-    address: string;
-    city: string;
-    zip: string;
-  };
-};
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  browsingHistory: string[]; // for AI, simple array of product slugs
-  purchaseHistory: string[]; // for AI, simple array of product slugs
-};
-
-export type Customer = {
-  id: string;
-  name: string;
-  email: string;
-  totalOrders: number;
-  totalSpent: number;
-  joinDate: Date;
 };
