@@ -8,6 +8,10 @@ export type User = {
     password?: string; // In a real app this would be a hash
     browsingHistory: string[]; // for AI, simple array of product slugs
     purchaseHistory: string[]; // for AI, simple array of product slugs
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
 };
 export type Order = Omit<PrismaOrder, 'total'> & { total: number };
 export type Customer = PrismaCustomer;

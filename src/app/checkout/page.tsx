@@ -1,14 +1,13 @@
 'use client';
 
 import { useCart } from '@/hooks/use-cart';
-import { getProductsByIds, createOrder } from '@/lib/queries';
-import type { Product } from '@prisma/client';
+import { getProductsByIds, createOrder, getUser } from '@/lib/queries';
+import type { Product, User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,7 +47,20 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchInitialData() {
+      // In a real app, you'd get the user ID from the session/token
+      const user = await getUser('1'); 
+      if (user) {
+        form.reset({
+          name: user.name,
+          email: user.email,
+          address: user.address,
+          city: user.city,
+          postalCode: user.postalCode,
+          country: user.country,
+        });
+      }
+
       const productIds = items.map((item) => item.productId);
       if (productIds.length > 0) {
         const fetchedProducts = await getProductsByIds(productIds);
@@ -58,13 +70,12 @@ export default function CheckoutPage() {
         }));
         setProducts(productsWithQuantities);
       } else if (items.length === 0 && !loading) {
-        // If cart is empty and we are not in initial loading phase, redirect.
         router.replace('/products');
       }
       setLoading(false);
     }
-    fetchProducts();
-  }, [items, loading, router]);
+    fetchInitialData();
+  }, [items, loading, router, form]);
   
   const subtotal = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
@@ -81,7 +92,6 @@ export default function CheckoutPage() {
             description: "Thank you for your purchase. Your order has been successfully placed.",
         });
         clearCart();
-        // A real app would redirect to an order confirmation page with order ID
         router.push('/');
     } catch (error) {
         toast({
