@@ -15,6 +15,8 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent } from '@/components/ui/card';
+import { Pencil } from 'lucide-react';
 
 const checkoutSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -31,6 +33,7 @@ export default function CheckoutPage() {
   const { items, clearCart } = useCart();
   const [products, setProducts] = useState<(Product & { quantity: number })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -45,6 +48,9 @@ export default function CheckoutPage() {
       country: '',
     },
   });
+  
+  const { watch } = form;
+  const watchedFields = watch();
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -109,31 +115,54 @@ export default function CheckoutPage() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-12">
       <h1 className="font-headline text-4xl font-bold mb-8 text-center">Checkout</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         <div>
           <h2 className="text-2xl font-bold mb-4">Shipping Information</h2>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="email" render={({ field }) => (
-                    <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="address" render={({ field }) => (
-                    <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="city" render={({ field }) => (
-                        <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={form.control} name="postalCode" render={({ field }) => (
-                        <FormItem><FormLabel>Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                </div>
-                <FormField control={form.control} name="country" render={({ field }) => (
-                    <FormItem><FormLabel>Country</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
+                {isEditingAddress ? (
+                    <>
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="email" render={({ field }) => (
+                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="address" render={({ field }) => (
+                            <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField control={form.control} name="city" render={({ field }) => (
+                                <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name="postalCode" render={({ field }) => (
+                                <FormItem><FormLabel>Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                        </div>
+                        <FormField control={form.control} name="country" render={({ field }) => (
+                            <FormItem><FormLabel>Country</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <Button type="button" variant="secondary" onClick={() => setIsEditingAddress(false)}>Save Address</Button>
+                    </>
+                ) : (
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex justify-between items-start">
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                    <p className="font-semibold text-foreground">{watchedFields.name}</p>
+                                    <p>{watchedFields.address}</p>
+                                    <p>{watchedFields.city}, {watchedFields.postalCode}</p>
+                                    <p>{watchedFields.country}</p>
+                                    <p className='pt-2'>{watchedFields.email}</p>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => setIsEditingAddress(true)}>
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    Edit Address
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <Button type="submit" size="lg" className="w-full mt-6" disabled={form.formState.isSubmitting || items.length === 0}>
                     {form.formState.isSubmitting ? 'Placing Order...' : `Place Order - ${formatCurrency(subtotal)}`}

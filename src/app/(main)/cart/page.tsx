@@ -67,9 +67,7 @@ export default function CartPage() {
   const subtotal = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1">
+    <>
         <div className="container max-w-6xl mx-auto px-4 py-12">
           <h1 className="font-headline text-4xl font-bold mb-8 text-center">Your Shopping Cart</h1>
           <div className="grid lg:grid-cols-3 gap-12">
@@ -173,8 +171,6 @@ export default function CartPage() {
             </div>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+    </>
   );
 }
