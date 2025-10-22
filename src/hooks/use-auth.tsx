@@ -41,6 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           title: 'Logged Out',
           description: 'You have been successfully logged out.',
         });
+        // Full page reload to ensure all state is cleared
+        window.location.href = '/login';
       } else {
         throw new Error('Logout failed');
       }
@@ -55,9 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const value = { loggedIn, logout };
 
+  if (loading) {
+    return null; // Don't render children until auth status is determined
+  }
+
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
