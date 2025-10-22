@@ -59,7 +59,40 @@ const productsToSeed = [
   { name: 'Cinnamon Sticks', slug: 'cinnamon-sticks', description: 'Sweet and fragrant cinnamon sticks, perfect for infusing flavor into drinks, desserts, and savory dishes.', price: 12.49, stock: 60, category: 'Spices' },
 ];
 
+const usersToSeed = [
+    {
+      id: '1',
+      name: 'Alice',
+      email: 'alice@example.com',
+      password: 'password123', // In a real app, this would be a hash
+      browsingHistory: 'turmeric-powder,coriander-powder,wheat-flour',
+      purchaseHistory: 'turmeric-powder',
+      address: '123 Spice Lane',
+      city: 'Flavor Town',
+      postalCode: '12345',
+      country: 'India'
+    },
+    {
+      id: '2',
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'adminpassword',
+      browsingHistory: '',
+      purchaseHistory: '',
+      address: '456 Admin Avenue',
+      city: 'Control City',
+      postalCode: '54321',
+      country: 'India'
+    },
+];
+
 async function main() {
+  console.log(`Clearing existing data...`);
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+
   console.log(`Start seeding ...`)
   for (const p of productsToSeed) {
     const product = await prisma.product.create({
@@ -76,6 +109,14 @@ async function main() {
     })
     console.log(`Created product with id: ${product.id}`)
   }
+
+  for (const u of usersToSeed) {
+      const user = await prisma.user.create({
+          data: u
+      });
+      console.log(`Created user with id: ${user.id}`);
+  }
+
   console.log(`Seeding finished.`)
 }
 
