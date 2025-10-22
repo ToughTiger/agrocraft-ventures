@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
+    "dev": "PRISMA_QUERY_ENGINE_LIBRARY=\"./node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "PRISMA_QUERY_ENGINE_LIBRARY=\"./node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" NODE_ENV=production next build",
