@@ -48,12 +48,14 @@ export function Header() {
             <span className="sr-only">Search</span>
           </Button>
           
-          <Link href={loggedIn ? "/admin" : "/login"}>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Admin</span>
-            </Button>
-          </Link>
+          {isClient && (
+            <Link href={loggedIn ? "/admin" : "/login"}>
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Admin</span>
+              </Button>
+            </Link>
+          )}
 
           <div className="relative">
             <Link href="/cart">
