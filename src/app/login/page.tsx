@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function LoginPage() {
           title: 'Login Successful',
           description: "Welcome back! You're being redirected.",
         });
-        router.push('/admin'); // Redirect to admin or another dashboard
+        window.location.href = '/admin';
       } else {
         const errorData = await response.json();
         toast({
@@ -84,9 +85,12 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing In...' : 'Sign In'}
+            </Button>
+            <Button variant="link" asChild>
+                <Link href="/">Back to Shop</Link>
             </Button>
           </CardFooter>
         </form>

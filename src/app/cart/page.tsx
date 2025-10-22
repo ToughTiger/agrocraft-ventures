@@ -11,6 +11,8 @@ import { Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 function CartItemSkeleton() {
     return (
@@ -57,71 +59,77 @@ export default function CartPage() {
   const subtotal = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <h1 className="font-headline text-4xl font-bold mb-8 text-center">Your Shopping Cart</h1>
-      {loading ? (
-          <div className="space-y-4">
-            <CartItemSkeleton />
-            <CartItemSkeleton />
-          </div>
-      ) : products.length === 0 ? (
-        <div className="text-center text-muted-foreground">
-          <p>Your cart is empty.</p>
-          <Button asChild className="mt-4">
-            <Link href="/products">Continue Shopping</Link>
-          </Button>
-        </div>
-      ) : (
-        <>
-          <div className="space-y-4">
-            {products.map((product) => (
-              <div key={product.id} className="flex items-center gap-4 border-b pb-4">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  width={80}
-                  height={80}
-                  className="rounded-md object-cover"
-                />
-                <div className="flex-grow">
-                  <Link href={`/products/${product.slug}`} className="font-semibold hover:text-primary">
-                    {product.name}
-                  </Link>
-                  <p className="text-sm text-muted-foreground">{formatCurrency(product.price)}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={product.quantity}
-                    onChange={(e) => updateQuantity(product.id, parseInt(e.target.value, 10))}
-                    className="w-20"
-                    aria-label={`Quantity for ${product.name}`}
-                  />
-                  <Button variant="ghost" size="icon" onClick={() => removeItem(product.id)} aria-label={`Remove ${product.name} from cart`}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="w-24 text-right font-semibold">
-                  {formatCurrency(product.price * product.quantity)}
-                </div>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        <div className="container max-w-4xl mx-auto px-4 py-12">
+          <h1 className="font-headline text-4xl font-bold mb-8 text-center">Your Shopping Cart</h1>
+          {loading ? (
+              <div className="space-y-4">
+                <CartItemSkeleton />
+                <CartItemSkeleton />
               </div>
-            ))}
-          </div>
-          <div className="mt-8 flex justify-end">
-            <div className="w-full max-w-sm">
-              <div className="flex justify-between font-bold text-lg">
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
-              </div>
-              <p className="text-muted-foreground text-sm mt-1">Shipping and taxes calculated at checkout.</p>
-              <Button asChild size="lg" className="w-full mt-4">
-                <Link href="/checkout">Proceed to Checkout</Link>
+          ) : products.length === 0 ? (
+            <div className="text-center text-muted-foreground">
+              <p>Your cart is empty.</p>
+              <Button asChild className="mt-4">
+                <Link href="/products">Continue Shopping</Link>
               </Button>
             </div>
-          </div>
-        </>
-      )}
+          ) : (
+            <>
+              <div className="space-y-4">
+                {products.map((product) => (
+                  <div key={product.id} className="flex items-center gap-4 border-b pb-4">
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.name}
+                      width={80}
+                      height={80}
+                      className="rounded-md object-cover"
+                    />
+                    <div className="flex-grow">
+                      <Link href={`/products/${product.slug}`} className="font-semibold hover:text-primary">
+                        {product.name}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">{formatCurrency(product.price)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={product.quantity}
+                        onChange={(e) => updateQuantity(product.id, parseInt(e.target.value, 10))}
+                        className="w-20"
+                        aria-label={`Quantity for ${product.name}`}
+                      />
+                      <Button variant="ghost" size="icon" onClick={() => removeItem(product.id)} aria-label={`Remove ${product.name} from cart`}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="w-24 text-right font-semibold">
+                      {formatCurrency(product.price * product.quantity)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 flex justify-end">
+                <div className="w-full max-w-sm">
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm mt-1">Shipping and taxes calculated at checkout.</p>
+                  <Button asChild size="lg" className="w-full mt-4">
+                    <Link href="/checkout">Proceed to Checkout</Link>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
