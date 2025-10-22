@@ -5,6 +5,7 @@ export type User = {
     id: string;
     name: string;
     email: string;
+    password?: string; // In a real app this would be a hash
     browsingHistory: string[]; // for AI, simple array of product slugs
     purchaseHistory: string[]; // for AI, simple array of product slugs
 };

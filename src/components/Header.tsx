@@ -1,11 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Menu, Search } from 'lucide-react';
+import { ShoppingCart, User, Menu, Search, LogOut, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '@/components/Logo';
 import { useCart } from '@/hooks/use-cart';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -16,7 +19,14 @@ const navLinks = [
 
 export function Header() {
   const { items } = useCart();
+  const { loggedIn, logout } = useAuth();
+  const router = useRouter();
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,7 +48,22 @@ export function Header() {
             <Search className="h-5 w-5" />
             <span className="sr-only">Search</span>
           </Button>
-          <Link href="/account">
+          
+          {loggedIn ? (
+             <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="h-5 w-5" />
+              <span className="sr-only">Logout</span>
+            </Button>
+          ) : (
+            <Link href="/login">
+              <Button variant="ghost" size="icon">
+                <LogIn className="h-5 w-5" />
+                <span className="sr-only">Login</span>
+              </Button>
+            </Link>
+          )}
+
+          <Link href="/admin">
             <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
               <span className="sr-only">Account</span>
