@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Gauge, Package, ShoppingCart, Users, Home } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Gauge, Package, ShoppingCart, Users, Home, LogOut } from 'lucide-react';
 import Logo from './Logo';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import { Button } from './ui/button';
+import { useAuth } from '@/hooks/use-auth';
 
 const adminNavLinks = [
   { href: '/admin', label: 'Dashboard', icon: Gauge },
@@ -16,6 +18,13 @@ const adminNavLinks = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-background">
@@ -41,11 +50,15 @@ export function AdminSidebar() {
         <Separator className="my-4" />
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary mb-2"
         >
           <Home className="h-4 w-4" />
           Back to Store
         </Link>
+        <Button variant="ghost" className="w-full justify-start gap-3 px-3" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
+          Logout
+        </Button>
       </div>
     </aside>
   );
