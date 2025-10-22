@@ -9,7 +9,7 @@ export type User = {
     browsingHistory: string[]; // for AI, simple array of product slugs
     purchaseHistory: string[]; // for AI, simple array of product slugs
 };
-export type Order = PrismaOrder;
+export type Order = Omit<PrismaOrder, 'total'> & { total: number };
 export type Customer = PrismaCustomer;
 
 

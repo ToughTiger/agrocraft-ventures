@@ -10,6 +10,25 @@ import { Input } from '@/components/ui/input';
 import { Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function CartItemSkeleton() {
+    return (
+        <div className="flex items-center gap-4 border-b pb-4">
+            <Skeleton className="h-20 w-20 rounded-md" />
+            <div className="flex-grow space-y-2">
+                <Skeleton className="h-5 w-48" />
+                <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex items-center gap-2">
+                <Skeleton className="h-10 w-20" />
+                <Skeleton className="h-10 w-10" />
+            </div>
+            <Skeleton className="h-6 w-24" />
+      </div>
+    )
+}
+
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity } = useCart();
@@ -18,6 +37,7 @@ export default function CartPage() {
 
   useEffect(() => {
     async function fetchProducts() {
+      setLoading(true);
       const productIds = items.map((item) => item.productId);
       if (productIds.length > 0) {
         const fetchedProducts = await getProductsByIds(productIds);
@@ -36,14 +56,15 @@ export default function CartPage() {
 
   const subtotal = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
-  if (loading) {
-    return <div className="container max-w-4xl mx-auto px-4 py-12 text-center">Loading cart...</div>;
-  }
-
   return (
     <div className="container max-w-4xl mx-auto px-4 py-12">
       <h1 className="font-headline text-4xl font-bold mb-8 text-center">Your Shopping Cart</h1>
-      {products.length === 0 ? (
+      {loading ? (
+          <div className="space-y-4">
+            <CartItemSkeleton />
+            <CartItemSkeleton />
+          </div>
+      ) : products.length === 0 ? (
         <div className="text-center text-muted-foreground">
           <p>Your cart is empty.</p>
           <Button asChild className="mt-4">
@@ -75,8 +96,9 @@ export default function CartPage() {
                     value={product.quantity}
                     onChange={(e) => updateQuantity(product.id, parseInt(e.target.value, 10))}
                     className="w-20"
+                    aria-label={`Quantity for ${product.name}`}
                   />
-                  <Button variant="ghost" size="icon" onClick={() => removeItem(product.id)}>
+                  <Button variant="ghost" size="icon" onClick={() => removeItem(product.id)} aria-label={`Remove ${product.name} from cart`}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -93,8 +115,8 @@ export default function CartPage() {
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               <p className="text-muted-foreground text-sm mt-1">Shipping and taxes calculated at checkout.</p>
-              <Button size="lg" className="w-full mt-4">
-                Proceed to Checkout
+              <Button asChild size="lg" className="w-full mt-4">
+                <Link href="/checkout">Proceed to Checkout</Link>
               </Button>
             </div>
           </div>

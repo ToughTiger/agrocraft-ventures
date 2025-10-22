@@ -17,13 +17,15 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { loggedIn, logout } = useAuth();
+  const { loggedIn } = useAuth();
   const { items } = useCart();
-  const [itemCount, setItemCount] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setItemCount(items.reduce((total, item) => total + item.quantity, 0));
-  }, [items]);
+    setIsClient(true);
+  }, []);
+
+  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -60,7 +62,7 @@ export function Header() {
                 <span className="sr-only">Shopping Cart</span>
                 </Button>
             </Link>
-            {itemCount > 0 && (
+            {isClient && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
                 {itemCount}
                 </span>

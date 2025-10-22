@@ -1,6 +1,7 @@
-import type { Product, User } from './types';
+import type { Product, User, Order } from './types';
 
-const products: Product[] = [
+// Mock data, acting as our database
+let products: Product[] = [
     { id: '1', name: 'Turmeric Powder', slug: 'turmeric-powder', description: 'Freshly ground turmeric powder with high curcumin content. Adds vibrant color and earthy flavor to your dishes.', price: 5.99, stock: 150, category: 'Spices', imageUrl: "https://images.unsplash.com/photo-1698556735172-1b5b3cd9d2ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx0dXJtZXJpYyUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTU5OTl8MA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "turmeric powder", createdAt: new Date(), updatedAt: new Date() },
     { id: '2', name: 'Red Chili Powder', slug: 'chili-powder', description: 'Spicy and flavorful red chili powder, perfect for adding a kick to any meal. Made from sun-dried red chilies.', price: 6.49, stock: 120, category: 'Spices', imageUrl: "https://images.unsplash.com/photo-1702041295471-01b73fd39907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsaSUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTYxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "chili powder", createdAt: new Date(), updatedAt: new Date() },
     { id: '3', name: 'Coriander Powder', slug: 'coriander-powder', description: 'Aromatic and mild, our coriander powder is an essential ingredient for curries and spice blends.', price: 4.99, stock: 200, category: 'Spices', imageUrl: "https://images.unsplash.com/photo-1750472878210-0778dcbcc5bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb3JpYW5kZXIlMjBwb3dkZXJ8ZW58MHx8fHwxNzU5Mzk2MTY0fDA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "coriander powder", createdAt: new Date(), updatedAt: new Date() },
@@ -30,7 +31,9 @@ const users: User[] = [
     },
   ];
 
+let orders: Order[] = [];
 
+// Mock database interface
 export const db = {
     product: {
         findMany: async () => Promise.resolve(products),
@@ -46,6 +49,38 @@ export const db = {
         findManyByIds: async (ids: string[]) => Promise.resolve(products.filter(p => ids.includes(p.id))),
         findManyBySlugs: async (slugs: string[]) => Promise.resolve(products.filter(p => slugs.includes(p.slug))),
         findFeatured: async () => Promise.resolve(products.slice(0, 4)),
+        create: async (data: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'slug' | 'imageHint'> & { slug?: string, imageHint?: string }) => {
+            const newProduct: Product = {
+                id: (products.length + 2).toString(),
+                ...data,
+                slug: data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+                imageHint: data.name,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            products.push(newProduct);
+            return Promise.resolve(newProduct);
+        },
+        update: async (id: string, data: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>) => {
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) return Promise.resolve(null);
+            
+            const updatedProduct = {
+                ...products[productIndex],
+                ...data,
+                slug: data.name ? data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : products[productIndex].slug,
+                updatedAt: new Date(),
+            };
+            products[productIndex] = updatedProduct;
+            return Promise.resolve(updatedProduct);
+        },
+        delete: async (id: string) => {
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) return Promise.resolve(null);
+
+            const [deletedProduct] = products.splice(productIndex, 1);
+            return Promise.resolve(deletedProduct);
+        }
     },
     user: {
         findUnique: async (query: { where: { email?: string, id?: string } }) => {
@@ -56,6 +91,21 @@ export const db = {
                 return Promise.resolve(users.find(u => u.id === query.where.id) || null);
             }
             return Promise.resolve(null);
+        }
+    },
+    order: {
+        findMany: async () => Promise.resolve(orders),
+        create: async (data: Omit<Order, 'id'| 'createdAt' | 'updatedAt' | 'status' | 'total'> & {total: number}) => {
+             const newOrder: Order = {
+                id: `order-${orders.length + 1}`,
+                ...data,
+                total: data.total,
+                status: 'PENDING',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            orders.push(newOrder);
+            return Promise.resolve(newOrder);
         }
     }
 }

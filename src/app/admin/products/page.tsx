@@ -6,6 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
 } from "@tanstack/react-table"
 
 import {
@@ -17,9 +19,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { columns } from "./columns"
-import { getProducts } from "@/lib/queries"
+import { getColumns } from "./columns"
+import { deleteProduct, getProducts } from "@/lib/queries"
 import type { Product } from "@prisma/client"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -35,6 +40,8 @@ function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   })
 
   return (
@@ -108,15 +115,52 @@ function DataTable<TData, TValue>({
 
 export default function ProductsPage() {
     const [data, setData] = React.useState<Product[]>([]);
-    React.useEffect(() => {
-        getProducts().then(setData);
+    const [loading, setLoading] = React.useState(true);
+    const { toast } = useToast();
+    const router = useRouter();
+
+    const fetchAndSetData = React.useCallback(async () => {
+        setLoading(true);
+        const products = await getProducts();
+        setData(products);
+        setLoading(false);
     }, []);
+
+    React.useEffect(() => {
+        fetchAndSetData();
+    }, [fetchAndSetData]);
+
+    const handleDeleteProduct = async (productId: string) => {
+        try {
+            await deleteProduct(productId);
+            toast({
+                title: "Product Deleted",
+                description: "The product has been successfully deleted.",
+            });
+            // Re-fetch data to update the table
+            fetchAndSetData();
+        } catch (error) {
+             toast({
+                variant: "destructive",
+                title: "Deletion Failed",
+                description: "There was a problem deleting the product.",
+            });
+        }
+    }
+
+    const columns = React.useMemo(() => getColumns(handleDeleteProduct), [handleDeleteProduct]);
+    
+    if (loading) {
+        return <div>Loading products...</div>
+    }
 
     return (
         <div>
             <div className="flex justify-between items-center mb-8">
                 <h1 className="font-headline text-3xl font-bold">Products</h1>
-                <Button>Add Product</Button>
+                <Button asChild>
+                  <Link href="/admin/products/new">Add Product</Link>
+                </Button>
             </div>
             <DataTable columns={columns} data={data} />
         </div>
