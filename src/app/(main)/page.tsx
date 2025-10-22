@@ -1,8 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { getFeaturedProducts } from "@/lib/queries";
 import { ProductCard } from "@/components/ProductCard";
 import Image from "next/image";
 import { RecommendedProducts } from "@/components/RecommendedProducts";
+import Link from "next/link";
 
 export default async function HomePage() {
   const featuredProducts = await getFeaturedProducts();
@@ -93,7 +95,9 @@ export default async function HomePage() {
             <p className="max-w-xl mx-auto text-muted-foreground mb-8">
               Have questions? We'd love to hear from you. Reach out to us for inquiries, feedback, or just to say hello.
             </p>
-            <Button size="lg">Contact Us</Button>
+            <Button size="lg" asChild>
+                <Link href="/contact">Contact Us</Link>
+            </Button>
         </div>
       </section>
     </>
