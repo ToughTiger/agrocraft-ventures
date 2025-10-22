@@ -1,5 +1,8 @@
+'use client';
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import dynamic from 'next/dynamic';
+
 
 export default function MainLayout({
   children,

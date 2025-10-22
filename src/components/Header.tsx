@@ -5,7 +5,9 @@ import { ShoppingCart, User, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '@/components/Logo';
+import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
+import { useEffect, useState } from 'react';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -15,8 +17,13 @@ const navLinks = [
 ];
 
 export function Header() {
+  const { loggedIn, logout } = useAuth();
   const { items } = useCart();
-  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const [itemCount, setItemCount] = useState(0);
+
+  useEffect(() => {
+    setItemCount(items.reduce((total, item) => total + item.quantity, 0));
+  }, [items]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,7 +46,7 @@ export function Header() {
             <span className="sr-only">Search</span>
           </Button>
           
-          <Link href="/admin">
+          <Link href={loggedIn ? "/admin" : "/login"}>
             <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
               <span className="sr-only">Admin</span>
