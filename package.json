@@ -3,25 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "PRISMA_QUERY_ENGINE_LIBRARY=\"/home/user/studio/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" next dev --turbopack -p 9002",
+    "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "PRISMA_QUERY_ENGINE_LIBRARY=\"/home/user/studio/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "prisma:generate": "PRISMA_QUERY_ENGINE_LIBRARY=\"/home/user/studio/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" prisma generate",
-    "prisma:seed": "PRISMA_QUERY_ENGINE_LIBRARY=\"/home/user/studio/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node\" prisma db seed",
-    "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
     "@genkit-ai/next": "^1.20.0",
     "@hookform/resolvers": "^4.1.3",
-    "@prisma/client": "^5.18.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-avatar": "^1.1.3",
@@ -74,7 +67,6 @@
     "@types/react-dom": "^18",
     "genkit-cli": "^1.20.0",
     "postcss": "^8",
-    "prisma": "^5.18.0",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.0",
     "typescript": "^5"

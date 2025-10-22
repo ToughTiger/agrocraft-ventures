@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { getColumns } from "./columns"
 import { deleteProduct, getProducts } from "@/lib/queries"
-import type { Product } from "@prisma/client"
+import type { Product } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import Link from "next/link"

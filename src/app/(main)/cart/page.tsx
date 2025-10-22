@@ -2,7 +2,7 @@
 
 import { useCart } from '@/hooks/use-cart';
 import { getProductsByIds, getUser } from '@/lib/queries';
-import type { Product, User } from '@prisma/client';
+import type { Product, User } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';

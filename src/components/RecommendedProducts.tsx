@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { productRecommendation } from '@/ai/flows/product-recommendation-prompt';
 import { getProductsBySlugs, getUser } from '@/lib/queries';
-import type { Product } from '@prisma/client';
+import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
 import { Skeleton } from './ui/skeleton';
 

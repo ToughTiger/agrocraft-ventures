@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { getUserByEmail } from '@/lib/queries';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Email and password are required.' }, { status: 400 });
     }
 
-    const user = await db.user.findUnique({ where: { email } });
+    const user = await getUserByEmail(email);
 
     // In a real app, you would compare a hashed password.
     // For this mock setup, we do a simple string comparison.

@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendedProducts } from "@/components/RecommendedProducts";
 import { formatCurrency } from "@/lib/utils";
+import type { Product } from "@/lib/types";
 
 // Client component for interactivity
 function AddToCartButton({ productId }: { productId: string }) {
@@ -16,13 +17,14 @@ function AddToCartButton({ productId }: { productId: string }) {
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug);
+  const product: Product | null = await getProductBySlug(params.slug);
   
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = (await getProducts()).filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const allProducts: Product[] = await getProducts();
+  const relatedProducts = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
     <>

@@ -1,8 +1,9 @@
 import { ProductCard } from "@/components/ProductCard";
 import { getProducts } from "@/lib/queries";
+import type { Product } from "@/lib/types";
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const products: Product[] = await getProducts();
   const categories = [...new Set(products.map(p => p.category))];
 
   return (

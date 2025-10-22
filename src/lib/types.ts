@@ -1,13 +1,31 @@
-import type { Product as PrismaProduct, User as PrismaUser, Order as PrismaOrder, OrderItem as PrismaOrderItem } from '@prisma/client';
-
-export type Product = PrismaProduct;
+// This represents the Product object used throughout the application.
+export type Product = {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    stock: number;
+    category: string;
+    imageUrl: string;
+    imageHint: string;
+    createdAt: Date;
+    updatedAt: Date;
+};
 
 // This represents the user object used throughout the application,
 // with history fields correctly typed as arrays.
-export type User = Omit<PrismaUser, 'password' | 'browsingHistory' | 'purchaseHistory'> & {
+export type User = {
+    id: string;
+    name: string;
+    email: string;
     password?: string;
     browsingHistory: string[];
     purchaseHistory: string[];
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
 };
 
 export type Customer = {
@@ -21,9 +39,18 @@ export type Customer = {
 
 // This represents the Order object used in the application,
 // with customerInfo correctly typed as a structured object.
-export type Order = Omit<PrismaOrder, 'customerInfo'> & {
+export type Order = {
+    id: string;
     customerInfo: Customer;
-    items: (PrismaOrderItem & { product: PrismaProduct })[];
+    items: {
+        id: string;
+        quantity: number;
+        price: number;
+        product: Product;
+    }[];
+    total: number;
+    status: string;
+    createdAt: Date;
 };
 
 

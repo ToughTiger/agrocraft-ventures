@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Product } from "@prisma/client"
+import type { Product } from "@/lib/types"
 import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 import {
