@@ -87,16 +87,14 @@ const usersToSeed = [
 ];
 
 async function main() {
-  console.log(`Clearing existing data...`);
-  await prisma.orderItem.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.user.deleteMany();
+  console.log(`Start seeding ...`);
 
-  console.log(`Start seeding ...`)
+  // Upsert products
   for (const p of productsToSeed) {
-    const product = await prisma.product.create({
-      data: {
+    const product = await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: {},
+      create: {
         name: p.name,
         slug: p.slug,
         description: p.description,
@@ -106,26 +104,29 @@ async function main() {
         imageUrl: getImageUrl(p.slug),
         imageHint: getImageHint(p.slug),
       },
-    })
-    console.log(`Created product with id: ${product.id}`)
+    });
+    console.log(`Upserted product with id: ${product.id}`);
   }
 
+  // Upsert users
   for (const u of usersToSeed) {
-      const user = await prisma.user.create({
-          data: u
-      });
-      console.log(`Created user with id: ${user.id}`);
+    const user = await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: u,
+    });
+    console.log(`Upserted user with id: ${user.id}`);
   }
 
-  console.log(`Seeding finished.`)
+  console.log(`Seeding finished.`);
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
