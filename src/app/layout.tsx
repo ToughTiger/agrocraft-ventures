@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Agrocraft Online',
+  title: 'Agrocraft Ventures',
   description: 'Premium spices and agricultural materials, powered by AI.',
 };
 
