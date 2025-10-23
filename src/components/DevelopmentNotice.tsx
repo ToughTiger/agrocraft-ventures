@@ -25,16 +25,6 @@ export function DevelopmentNotice() {
     }
   }, []);
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isOpen) {
-      timer = setTimeout(() => {
-        handleDismiss();
-      }, 7000); // Auto-dismiss after 7 seconds
-    }
-    return () => clearTimeout(timer);
-  }, [isOpen]);
-
   const handleDismiss = () => {
     sessionStorage.setItem(NOTICE_DISMISSED_KEY, 'true');
     setIsOpen(false);
