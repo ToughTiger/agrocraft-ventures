@@ -1,28 +1,11 @@
 import { getProductBySlug, getProducts } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendedProducts } from "@/components/RecommendedProducts";
 import type { Product } from "@/lib/types";
-import { EnquiryForm } from "@/components/EnquiryForm";
-import { useState } from 'react';
-
-function ProductEnquiryButton({ product }: { product: Product }) {
-    'use client';
-    const [isEnquiryFormOpen, setIsEnquiryFormOpen] = useState(false);
-    return (
-        <>
-            <Button size="lg" onClick={() => setIsEnquiryFormOpen(true)}>Price on request</Button>
-            <EnquiryForm 
-                product={product}
-                open={isEnquiryFormOpen}
-                onOpenChange={setIsEnquiryFormOpen}
-            />
-        </>
-    );
-}
+import { ProductEnquiryButton } from "@/components/ProductEnquiryButton";
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product: Product | null = await getProductBySlug(params.slug);
