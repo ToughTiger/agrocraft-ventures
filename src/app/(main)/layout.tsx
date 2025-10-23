@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { DevelopmentNotice } from "@/components/DevelopmentNotice";
 
 
 export default function MainLayout({
@@ -12,6 +13,7 @@ export default function MainLayout({
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <DevelopmentNotice />
     </div>
   );
 }
