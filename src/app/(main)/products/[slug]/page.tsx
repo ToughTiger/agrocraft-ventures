@@ -5,15 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendedProducts } from "@/components/RecommendedProducts";
-import { formatCurrency } from "@/lib/utils";
 import type { Product } from "@/lib/types";
+import { EnquiryForm } from "@/components/EnquiryForm";
+import { useState } from 'react';
 
-// Client component for interactivity
-function AddToCartButton({ productId }: { productId: string }) {
+function ProductEnquiryButton({ product }: { product: Product }) {
     'use client';
-    const { useCart } = require('@/hooks/use-cart');
-    const { addItem } = useCart();
-    return <Button size="lg" onClick={() => addItem(productId)}>Add to Cart</Button>;
+    const [isEnquiryFormOpen, setIsEnquiryFormOpen] = useState(false);
+    return (
+        <>
+            <Button size="lg" onClick={() => setIsEnquiryFormOpen(true)}>Price on request</Button>
+            <EnquiryForm 
+                product={product}
+                open={isEnquiryFormOpen}
+                onOpenChange={setIsEnquiryFormOpen}
+            />
+        </>
+    );
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
@@ -42,11 +50,11 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <div>
             <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
             <h1 className="font-headline text-4xl font-bold mb-4">{product.name}</h1>
-            <p className="text-3xl font-semibold mb-6">{formatCurrency(product.price)}</p>
+            
             <Separator className="my-6" />
             <p className="text-muted-foreground leading-relaxed mb-8">{product.description}</p>
             
-            <AddToCartButton productId={product.id} />
+            <ProductEnquiryButton product={product} />
             
             <p className="text-sm text-muted-foreground mt-4">
               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
