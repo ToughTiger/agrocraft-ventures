@@ -7,7 +7,7 @@ import Logo from './Logo';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
-import { useAuth } from '@/hooks/use-auth.tsx';
+import { useAuth } from '@/hooks/use-auth';
 
 const adminNavLinks = [
   { href: '/admin', label: 'Dashboard', icon: Gauge },
