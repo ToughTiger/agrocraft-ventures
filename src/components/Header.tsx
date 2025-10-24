@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { User, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '@/components/Logo';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -53,7 +53,13 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <nav className="grid gap-6 text-lg font-medium mt-8">
+              <SheetHeader className="mb-8">
+                <SheetTitle>Navigation</SheetTitle>
+                <SheetDescription>
+                  Select a page to navigate to.
+                </SheetDescription>
+              </SheetHeader>
+              <nav className="grid gap-6 text-lg font-medium">
                 <Logo />
                 {navLinks.map((link) => (
                     <Link
