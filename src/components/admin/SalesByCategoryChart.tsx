@@ -65,7 +65,7 @@ export function SalesByCategoryChart({ orders }: SalesByCategoryChartProps) {
           fill="#8884d8"
           dataKey="value"
           nameKey="name"
-          onClick={handlePieClick}
+          onClick={(data) => handlePieClick(data)}
           className="cursor-pointer"
         >
           {salesByCategory.map((entry, index) => (

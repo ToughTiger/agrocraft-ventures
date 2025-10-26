@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,12 +26,15 @@ const productFormSchema = z.object({
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage() {
   const router = useRouter();
+  const params = useParams();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const productId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -39,8 +42,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     async function fetchData() {
+      if (!productId) return;
+
       const [fetchedProduct, fetchedCategories] = await Promise.all([
-        getProductById(params.id),
+        getProductById(productId),
         getCategories(),
       ]);
 
@@ -60,7 +65,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       setLoading(false);
     }
     fetchData();
-  }, [params.id, form]);
+  }, [productId, form]);
 
   const onSubmit = async (data: ProductFormValues) => {
     if (!product) return;

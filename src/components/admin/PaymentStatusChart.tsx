@@ -38,7 +38,7 @@ export function PaymentStatusChart({ orders }: PaymentStatusChartProps) {
   const handlePieClick = (data: any) => {
     // Navigate to orders page with a filter for the clicked status
     if (data && data.name) {
-      router.push(`/admin/orders?status=${data.name.toUpperCase()}`);
+      router.push(`/admin/orders?status=${data.name}`);
     }
   };
 
@@ -58,7 +58,7 @@ export function PaymentStatusChart({ orders }: PaymentStatusChartProps) {
           fill="#8884d8"
           dataKey="value"
           nameKey="name"
-          onClick={handlePieClick}
+          onClick={(data) => handlePieClick(data)}
           className="cursor-pointer"
         >
           {paymentData.map((entry, index) => (
