@@ -15,14 +15,14 @@ const products: Product[] = [
 ];
 
 const users: User[] = [
-    { id: '1', name: 'Alice', email: 'alice@example.com', password: 'password123', browsingHistory: 'turmeric-powder,wheat-flour', purchaseHistory: 'turmeric-powder', createdAt: new Date(), updatedAt: new Date() },
-    { id: '2', name: 'Admin User', email: 'admin@example.com', password: 'adminpassword', browsingHistory: '', purchaseHistory: '', createdAt: new Date(), updatedAt: new Date() },
+    { id: '1', name: 'Alice', email: 'alice@example.com', mobile: '9876543210', password: 'password123', browsingHistory: 'turmeric-powder,wheat-flour', purchaseHistory: 'turmeric-powder', address: '123 Spice Lane', city: 'Mumbai', postalCode: '400001', country: 'India', createdAt: new Date(), updatedAt: new Date() },
+    { id: '2', name: 'Admin User', email: 'admin@example.com', password: 'adminpassword', mobile: '9999999999', browsingHistory: '', purchaseHistory: '', address: '456 Admin Ave', city: 'Control City', postalCode: '110001', country: 'India', createdAt: new Date(), updatedAt: new Date() },
 ];
 
 const customers: Customer[] = [
-    { id: '1', name: 'Bob Johnson', email: 'bob@example.com', userId: undefined, createdAt: new Date() },
-    { id: '2', name: 'Charlie Brown', email: 'charlie@example.com', userId: undefined, createdAt: new Date() },
-    { id: '3', name: 'Alice', email: 'alice@example.com', userId: '1', createdAt: new Date() },
+    { id: '1', name: 'Bob Johnson', email: 'bob@example.com', mobile: '8887776665', city: 'Delhi', userId: undefined, createdAt: new Date() },
+    { id: '2', name: 'Charlie Brown', email: 'charlie@example.com', mobile: '7778889990', city: 'Bengaluru', userId: undefined, createdAt: new Date() },
+    { id: '3', name: 'Alice', email: 'alice@example.com', mobile: '9876543210', city: 'Mumbai', userId: '1', createdAt: new Date() },
 ]
 
 const orders: Order[] = [
@@ -30,6 +30,7 @@ const orders: Order[] = [
     { id: '2', customerId: '2', total: 10.99, status: 'SHIPPED', createdAt: new Date('2023-11-18T14:30:00Z') },
     { id: '3', customerId: '3', total: 12.98, status: 'PENDING', createdAt: new Date('2023-12-01T09:00:00Z') },
     { id: '4', customerId: '1', total: 5.99, status: 'DELIVERED', createdAt: new Date('2023-12-02T12:00:00Z') },
+    { id: '5', customerId: '3', total: 4.99, status: 'DELIVERED', createdAt: new Date('2024-01-15T11:00:00Z') },
 ];
 
 const orderItems: OrderItem[] = [
@@ -38,6 +39,7 @@ const orderItems: OrderItem[] = [
     { id: '3', orderId: '2', productId: '4', quantity: 1, price: 10.99 },
     { id: '4', orderId: '3', productId: '2', quantity: 2, price: 6.49 },
     { id: '5', orderId: '4', productId: '1', quantity: 1, price: 5.99 },
+    { id: '6', orderId: '5', productId: '3', quantity: 1, price: 4.99 },
 ];
 
 // Mock database object
@@ -76,6 +78,7 @@ export const db = {
   },
   order: {
       findMany: async () => [...orders],
+      findManyByCustomerId: async (customerId: string) => orders.filter(o => o.customerId === customerId),
       findUnique: async ({ where: { id } }: { where: { id: string } }) => orders.find(o => o.id === id) || null,
   },
   orderItem: {

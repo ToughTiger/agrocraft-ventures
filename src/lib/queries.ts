@@ -64,16 +64,20 @@ export async function getUsers(): Promise<User[]> {
     return db.user.findMany();
 }
 
+export async function getCustomers(): Promise<Customer[]> {
+    return db.customer.findMany();
+}
+
+export async function getCustomerById(id: string): Promise<Customer | null> {
+    return db.customer.findUnique({ where: { id }});
+}
+
 export async function getUser(id: string): Promise<User | null> {
     return db.user.findUnique({ where: { id } });
 }
 
 export async function getUserByEmail(email: string) {
     return db.user.findUnique({ where: { email } });
-}
-
-export async function getCustomers(): Promise<Customer[]> {
-    return db.customer.findMany();
 }
 
 
@@ -86,6 +90,16 @@ export async function getOrders(): Promise<Order[]> {
     return orders.map(o => ({
         ...o,
         customer: customerMap.get(o.customerId),
+    }));
+}
+
+export async function getOrdersByCustomerId(customerId: string): Promise<Order[]> {
+    const orders = await db.order.findManyByCustomerId(customerId);
+    const customer = await getCustomerById(customerId);
+
+    return orders.map(o => ({
+        ...o,
+        customer,
     }));
 }
 

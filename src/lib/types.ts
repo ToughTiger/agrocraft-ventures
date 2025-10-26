@@ -29,6 +29,7 @@ export type User = {
     name: string;
     email: string;
     password?: string;
+    mobile?: string;
     // Browsing/purchase history stored as a comma-separated string of product slugs
     browsingHistory: string;
     purchaseHistory: string;
@@ -45,6 +46,8 @@ export type Customer = {
     id: string;
     name: string;
     email: string;
+    mobile?: string;
+    city?: string;
     userId?: string;
     createdAt: Date;
 };
