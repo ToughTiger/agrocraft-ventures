@@ -8,7 +8,10 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  ColumnFiltersState,
+  SortingState,
 } from "@tanstack/react-table"
+import { useSearchParams, useRouter } from 'next/navigation'
 
 import {
   Table,
@@ -23,29 +26,50 @@ import { getColumns } from "./columns"
 import { deleteProduct, getProducts } from "@/lib/queries"
 import type { Product } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { Input } from "@/components/ui/input"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  initialFilters?: ColumnFiltersState,
 }
 
 function DataTable<TData, TValue>({
   columns,
   data,
+  initialFilters = [],
 }: DataTableProps<TData, TValue>) {
+    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialFilters)
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    state: {
+        sorting,
+        columnFilters,
+    }
   })
 
   return (
     <div>
+       <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter products..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -112,12 +136,22 @@ function DataTable<TData, TValue>({
   )
 }
 
-
-export default function ProductsPage() {
+function ProductsPageContent() {
     const [data, setData] = React.useState<Product[]>([]);
     const [loading, setLoading] = React.useState(true);
     const { toast } = useToast();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const categoryFilter = searchParams.get('category');
+
+    const initialFilters: ColumnFiltersState = React.useMemo(() => {
+      const filters: ColumnFiltersState = [];
+      if (categoryFilter) {
+          filters.push({ id: 'category', value: categoryFilter });
+      }
+      return filters;
+    }, [categoryFilter]);
+
 
     const fetchAndSetData = React.useCallback(async () => {
         setLoading(true);
@@ -148,6 +182,7 @@ export default function ProductsPage() {
         }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const columns = React.useMemo(() => getColumns(handleDeleteProduct), [handleDeleteProduct]);
     
     if (loading) {
@@ -162,7 +197,15 @@ export default function ProductsPage() {
                   <Link href="/admin/products/new">Add Product</Link>
                 </Button>
             </div>
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={data} initialFilters={initialFilters} />
         </div>
+    )
+}
+
+export default function ProductsPage() {
+    return (
+        <React.Suspense fallback={<div>Loading products...</div>}>
+            <ProductsPageContent />
+        </React.Suspense>
     )
 }

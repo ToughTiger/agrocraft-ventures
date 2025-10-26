@@ -8,7 +8,10 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  SortingState,
+  ColumnFiltersState,
 } from "@tanstack/react-table"
+import { useSearchParams } from 'next/navigation'
 import { MoreHorizontal, ArrowUpDown } from "lucide-react"
 
 import {
@@ -112,17 +115,30 @@ const columns: ColumnDef<Order>[] = [
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  initialFilters?: ColumnFiltersState
 }
 
 function DataTable<TData, TValue>({
   columns,
   data,
+  initialFilters = [],
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialFilters)
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
   })
 
   return (
@@ -193,10 +209,19 @@ function DataTable<TData, TValue>({
   )
 }
 
-
-export default function OrdersPage() {
+function OrdersPageContent() {
     const [data, setData] = React.useState<Order[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const searchParams = useSearchParams();
+    const statusFilter = searchParams.get('status');
+
+    const initialFilters = React.useMemo(() => {
+      const filters: ColumnFiltersState = [];
+      if(statusFilter) {
+        filters.push({ id: 'status', value: statusFilter });
+      }
+      return filters;
+    }, [statusFilter]);
 
     const fetchAndSetData = React.useCallback(async () => {
         setLoading(true);
@@ -218,7 +243,15 @@ export default function OrdersPage() {
             <div className="flex justify-between items-center mb-8">
                 <h1 className="font-headline text-3xl font-bold">Orders</h1>
             </div>
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={data} initialFilters={initialFilters} />
         </div>
+    )
+}
+
+export default function OrdersPage() {
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            <OrdersPageContent />
+        </React.Suspense>
     )
 }

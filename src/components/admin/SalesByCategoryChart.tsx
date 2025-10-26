@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip, Legend } from 'recharts';
 import type { Order } from '@/lib/types';
 import { FormattedCurrency } from '../FormattedCurrency';
+import { useRouter } from 'next/navigation';
 
 interface SalesByCategoryChartProps {
   orders: Order[];
@@ -24,6 +25,8 @@ const CustomTooltip = ({ active, payload }: any) => {
   };
 
 export function SalesByCategoryChart({ orders }: SalesByCategoryChartProps) {
+  const router = useRouter();
+
   const salesByCategory = React.useMemo(() => {
     const data: { [key: string]: number } = {};
     orders.forEach(order => {
@@ -39,6 +42,12 @@ export function SalesByCategoryChart({ orders }: SalesByCategoryChartProps) {
 
     return Object.entries(data).map(([name, value]) => ({ name, value }));
   }, [orders]);
+
+  const handlePieClick = (data: any) => {
+    if (data && data.name) {
+      router.push(`/admin/products?category=${data.name}`);
+    }
+  };
 
   if (!salesByCategory || salesByCategory.length === 0) {
     return <p className="text-center text-muted-foreground">No sales data available.</p>;
@@ -56,6 +65,8 @@ export function SalesByCategoryChart({ orders }: SalesByCategoryChartProps) {
           fill="#8884d8"
           dataKey="value"
           nameKey="name"
+          onClick={handlePieClick}
+          className="cursor-pointer"
         >
           {salesByCategory.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

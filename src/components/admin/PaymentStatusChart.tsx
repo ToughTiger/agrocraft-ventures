@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip, Legend } from 'recharts';
 import type { Order } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 interface PaymentStatusChartProps {
   orders: Order[];
@@ -23,6 +24,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   };
 
 export function PaymentStatusChart({ orders }: PaymentStatusChartProps) {
+  const router = useRouter();
   const paymentData = React.useMemo(() => {
     const data = orders.reduce((acc, order) => {
         const status = order.paymentStatus;
@@ -32,6 +34,13 @@ export function PaymentStatusChart({ orders }: PaymentStatusChartProps) {
 
     return Object.entries(data).map(([name, value]) => ({ name, value }));
   }, [orders]);
+
+  const handlePieClick = (data: any) => {
+    // Navigate to orders page with a filter for the clicked status
+    if (data && data.name) {
+      router.push(`/admin/orders?status=${data.name.toUpperCase()}`);
+    }
+  };
 
   if (!paymentData || paymentData.length === 0) {
     return <p className="text-center text-muted-foreground">No payment data available.</p>;
@@ -49,6 +58,8 @@ export function PaymentStatusChart({ orders }: PaymentStatusChartProps) {
           fill="#8884d8"
           dataKey="value"
           nameKey="name"
+          onClick={handlePieClick}
+          className="cursor-pointer"
         >
           {paymentData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
