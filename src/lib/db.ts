@@ -82,6 +82,7 @@ export const db = {
       findUnique: async ({ where: { id } }: { where: { id: string } }) => orders.find(o => o.id === id) || null,
   },
   orderItem: {
+      findMany: async () => [...orderItems],
       findManyByOrderId: async (orderId: string) => orderItems.filter(i => i.orderId === orderId),
   },
   customer: {
