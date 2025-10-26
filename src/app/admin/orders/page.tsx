@@ -31,8 +31,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { formatCurrency } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { FormattedCurrency } from "@/components/FormattedCurrency"
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -80,7 +80,7 @@ const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "total",
     header: () => <div className="text-right">Total</div>,
-    cell: ({ row }) => <div className="text-right font-medium">{formatCurrency(row.getValue("total"))}</div>,
+    cell: ({ row }) => <div className="text-right font-medium"><FormattedCurrency amount={row.getValue("total")} /></div>,
   },
    {
     id: "actions",

@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import type { Product } from "@/lib/types"
-import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -27,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
+import { FormattedCurrency } from "@/components/FormattedCurrency"
 
 type ActionsCellProps = {
   row: {
@@ -113,7 +113,7 @@ export const getColumns = (onDelete: (productId: string) => void): ColumnDef<Pro
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"))
  
-      return <div className="text-right font-medium">{formatCurrency(price)}</div>
+      return <div className="text-right font-medium"><FormattedCurrency amount={price} /></div>
     },
   },
   {

@@ -2,7 +2,6 @@ import { getCustomerById, getOrdersByCustomerId, getProductsBySlugs, getUser } f
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, ShoppingCart, Eye } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/table"
 import Link from "next/link";
 import Image from "next/image";
+import { FormattedCurrency } from "@/components/FormattedCurrency";
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -56,7 +56,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalSpent)}</div>
+            <div className="text-2xl font-bold"><FormattedCurrency amount={totalSpent} /></div>
           </CardContent>
         </Card>
         <Card>
@@ -100,7 +100,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                                 <TableCell className="font-mono">#{order.id}</TableCell>
                                 <TableCell><Badge variant={getStatusVariant(order.status)}>{order.status}</Badge></TableCell>
                                 <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                                <TableCell className="text-right">{formatCurrency(order.total)}</TableCell>
+                                <TableCell className="text-right"><FormattedCurrency amount={order.total} /></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

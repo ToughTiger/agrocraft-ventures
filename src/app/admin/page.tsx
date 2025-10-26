@@ -1,5 +1,4 @@
 import { getOrders, getProducts, getUsers } from "@/lib/queries";
-import { formatCurrency } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -11,6 +10,7 @@ import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
 import { SalesChart } from "@/components/admin/SalesChart";
 import { StockChart } from "@/components/admin/StockChart";
 import { AIInsights } from "@/components/admin/AIInsights";
+import { FormattedCurrency } from "@/components/FormattedCurrency";
 
 export default async function AdminDashboard() {
   const orders = await getOrders();
@@ -35,7 +35,7 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(totalRevenue)}
+              <FormattedCurrency amount={totalRevenue} />
             </div>
             <p className="text-xs text-muted-foreground">
               Across {totalOrders} orders

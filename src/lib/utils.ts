@@ -10,5 +10,6 @@ export function formatCurrency(amount: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
-  return `₹${formattedAmount}`;
+  // Return only the number, the symbol will be handled by the component
+  return formattedAmount;
 }

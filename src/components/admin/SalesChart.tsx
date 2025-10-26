@@ -4,10 +4,29 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Responsive
 import type { Order } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { RupeeSymbol } from '../RupeeSymbol';
 
 interface SalesChartProps {
   orders: Order[];
 }
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="p-2 bg-background border rounded-lg shadow-sm">
+        <p className="label">{`${label}`}</p>
+        <p className="intro flex items-center">
+            <RupeeSymbol className="mr-1"/> {new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 export function SalesChart({ orders }: SalesChartProps) {
   const salesData = orders.reduce((acc, order) => {
@@ -40,14 +59,11 @@ export function SalesChart({ orders }: SalesChartProps) {
         <YAxis 
           stroke="hsl(var(--muted-foreground))" 
           fontSize={12}
-          tickFormatter={(value) => formatCurrency(value as number)}
+          tickFormatter={(value) => `₹${new Intl.NumberFormat('en-IN').format(value as number)}`}
         />
         <Tooltip 
-          contentStyle={{ 
-            backgroundColor: 'hsl(var(--background))', 
-            borderColor: 'hsl(var(--border))' 
-          }}
-          formatter={(value) => [formatCurrency(value as number), 'Sales']}
+            cursor={{fill: 'hsl(var(--muted))'}}
+            content={<CustomTooltip />}
         />
         <Legend />
         <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
