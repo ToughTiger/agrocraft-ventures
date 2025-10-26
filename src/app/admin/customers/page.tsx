@@ -17,10 +17,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { getCustomers } from "@/lib/queries"
-import type { Customer } from "@/lib/types";
+import { getUsers } from "@/lib/queries"
+import type { User } from "@/lib/types";
 
-const columns: ColumnDef<Customer>[] = [
+const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -28,6 +28,14 @@ const columns: ColumnDef<Customer>[] = [
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "city",
+    header: "City",
+  },
+  {
+    accessorKey: "purchaseHistory",
+    header: "Purchase History",
   },
   {
     accessorKey: "createdAt",
@@ -123,13 +131,13 @@ function DataTable<TData, TValue>({
 
 
 export default function CustomersPage() {
-    const [data, setData] = React.useState<Customer[]>([]);
+    const [data, setData] = React.useState<User[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     const fetchAndSetData = React.useCallback(async () => {
         setLoading(true);
-        const customers = await getCustomers();
-        setData(customers.filter(c => c.email !== 'admin@example.com')); // Filter out admin
+        const users = await getUsers();
+        setData(users.filter(c => c.email !== 'admin@example.com')); // Filter out admin
         setLoading(false);
     }, []);
 

@@ -54,7 +54,7 @@ const Logo = ({ className }: { className?: string }) => {
       />
     </svg>
   
-    <div className="text-center -mt-2">
+    <div className="text-center -mt-5">
       <h1
         className="text-xl font-bold font-headline"
         style={{ color: 'hsl(var(--primary))' }}

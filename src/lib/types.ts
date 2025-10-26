@@ -32,6 +32,10 @@ export type User = {
     // Browsing/purchase history stored as a comma-separated string of product slugs
     browsingHistory: string;
     purchaseHistory: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
     createdAt: Date;
     updatedAt: Date;
 };
