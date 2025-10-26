@@ -105,6 +105,15 @@ export type SalesFact = {
     total_revenue: number;
 };
 
+// Custom type for monthly sales report
+export type SalesForMonth = {
+    productId: string;
+    productName: string;
+    productSlug: string;
+    quantitySold: number;
+    totalRevenue: number;
+}
+
 
 export type CartItem = {
   productId: string;

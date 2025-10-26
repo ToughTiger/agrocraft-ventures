@@ -2,8 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { Order } from '@/lib/types';
-import { formatCurrency } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 import { RupeeSymbol } from '../RupeeSymbol';
 
 interface SalesChartProps {
@@ -29,8 +28,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function SalesChart({ orders }: SalesChartProps) {
+  const router = useRouter();
+  
   const salesData = orders.reduce((acc, order) => {
-    const month = new Date(order.createdAt).toLocaleString('default', { month: 'short', year: '2-digit' });
+    const month = new Date(order.createdAt).toLocaleString('default', { month: 'short', year: '2-digit' }).replace(' ', '-');
     const existingEntry = acc.find(entry => entry.month === month);
 
     if (existingEntry) {
@@ -44,16 +45,21 @@ export function SalesChart({ orders }: SalesChartProps) {
 
   // Ensure chronological order
   salesData.sort((a, b) => {
-    const [aMonth, aYear] = a.month.split(' ');
-    const [bMonth, bYear] = b.month.split(' ');
-    const aDate = new Date(`${aMonth} 1, 20${aYear}`);
-    const bDate = new Date(`${bMonth} 1, 20${bYear}`);
+    const aDate = new Date(a.month.replace('-', ' 1, 20'));
+    const bDate = new Date(b.month.replace('-', ' 1, 20'));
     return aDate.getTime() - bDate.getTime();
   });
+  
+  const handleBarClick = (data: any) => {
+    if (data && data.activeLabel) {
+      const monthId = data.activeLabel;
+      router.push(`/admin/reports/sales/${monthId}`);
+    }
+  }
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={salesData}>
+      <BarChart data={salesData} onClick={handleBarClick} className="cursor-pointer">
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
         <YAxis 

@@ -13,8 +13,8 @@ export function StockChart({ products }: StockChartProps) {
 
   const handleBarClick = (data: any) => {
     if (data && data.activePayload && data.activePayload.length > 0) {
-      const productId = data.activePayload[0].payload.id;
-      router.push(`/admin/products/${productId}/edit`);
+      const productSlug = data.activePayload[0].payload.slug;
+      router.push(`/products/${productSlug}`);
     }
   };
 

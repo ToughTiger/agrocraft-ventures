@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from './db';
-import type { Product, User, Order, Customer, Category } from './types'; 
+import type { Product, User, Order, Customer, Category, SalesForMonth } from './types'; 
 
 // Product Queries
 export async function getProducts(): Promise<Product[]> {
@@ -87,9 +87,31 @@ export async function getOrders(): Promise<Order[]> {
     const customers = await db.customer.findMany();
     const customerMap = new Map(customers.map(c => [c.id, c]));
 
+    const orderItems = await db.orderItem.findMany();
+    const productIds = [...new Set(orderItems.map(i => i.productId))];
+    const products = await getProductsByIds(productIds);
+    const productMap = new Map(products.map(p => [p.id, p]));
+    const categoryMap = new Map((await db.category.findMany()).map(c => [c.id, c]));
+
+    for (const p of products) {
+        p.category = categoryMap.get(p.categoryId);
+    }
+    
+    const itemsByOrderId = new Map<string, any[]>();
+    for (const item of orderItems) {
+        if (!itemsByOrderId.has(item.orderId)) {
+            itemsByOrderId.set(item.orderId, []);
+        }
+        itemsByOrderId.get(item.orderId)!.push({
+            ...item,
+            product: productMap.get(item.productId)
+        });
+    }
+
     return orders.map(o => ({
         ...o,
         customer: customerMap.get(o.customerId),
+        items: itemsByOrderId.get(o.id) || [],
     }));
 }
 
@@ -120,15 +142,51 @@ export async function getOrderById(id: string): Promise<Order | null> {
     }
 }
 
+// Analytics Queries
+export async function getSalesForMonth(monthId: string): Promise<SalesForMonth[]> {
+    const allOrders = await getOrders();
+    const [monthName, year] = monthId.split('-');
+    const yearNumber = parseInt(`20${year}`);
 
-// Category Queries
-export async function getCategories(): Promise<Category[]> {
-    return db.category.findMany();
+    const filteredOrders = allOrders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        const orderMonth = orderDate.toLocaleString('default', { month: 'short' });
+        const orderYear = orderDate.getFullYear();
+        return orderMonth.toLowerCase() === monthName.toLowerCase() && orderYear === yearNumber;
+    });
+
+    const salesByProduct: { [productId: string]: SalesForMonth } = {};
+
+    for (const order of filteredOrders) {
+        for (const item of order.items || []) {
+            if (item.product) {
+                if (salesByProduct[item.productId]) {
+                    salesByProduct[item.productId].quantitySold += item.quantity;
+                    salesByProduct[item.productId].totalRevenue += item.quantity * item.price;
+                } else {
+                    salesByProduct[item.productId] = {
+                        productId: item.productId,
+                        productName: item.product.name,
+                        productSlug: item.product.slug,
+                        quantitySold: item.quantity,
+                        totalRevenue: item.quantity * item.price,
+                    };
+                }
+            }
+        }
+    }
+    return Object.values(salesByProduct).sort((a,b) => b.totalRevenue - a.totalRevenue);
 }
 
+
+// Category Queries
 export async function createCategory(name: string) {
     const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
     return db.category.create({ name, slug });
+}
+
+export async function getCategories(): Promise<Category[]> {
+    return db.category.findMany();
 }
 
 export async function deleteCategory(id: string) {
