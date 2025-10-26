@@ -19,8 +19,8 @@ export function RecommendedProducts() {
         if (!user) return;
 
         const result = await productRecommendation({
-          browsingHistory: user.browsingHistory.join(', '),
-          purchaseHistory: user.purchaseHistory.join(', '),
+          browsingHistory: user.browsingHistory,
+          purchaseHistory: user.purchaseHistory,
         });
 
         if (result.recommendations) {
