@@ -41,7 +41,7 @@ export function Header() {
           <Link href={loggedIn ? "/admin" : "/login"}>
             <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
-              <span className="sr-only">Admin</span>
+              <span className="sr-only">Account</span>
             </Button>
           </Link>
 
@@ -70,6 +70,13 @@ export function Header() {
                     {link.label}
                     </Link>
                 ))}
+                 <Link
+                    href={loggedIn ? "/admin" : "/login"}
+                    className="flex items-center gap-2 transition-colors hover:text-primary"
+                    >
+                    <User className="h-5 w-5" />
+                    Account
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
