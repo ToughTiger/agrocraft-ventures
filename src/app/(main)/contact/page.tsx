@@ -63,7 +63,7 @@ export default function ContactPage() {
             <CardContent className="text-muted-foreground space-y-2">
               <p className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 mt-1 shrink-0" />
-                <span>123 Spice Street, Suite 45, Flavor Town, Mumbai - 400052, India</span>
+                <span>819 Signet-A Palave City, Manapada, Dombivli,Thane,Maharashtra - 421204, India</span>
               </p>
             </CardContent>
           </Card>
@@ -77,7 +77,7 @@ export default function ContactPage() {
             <CardContent className="text-muted-foreground space-y-2">
               <p className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 mt-1 shrink-0" />
-                <span>Unit 67, Agro Industrial Estate, Harvest City, Pune - 411014, India</span>
+                <span>S-23, APMC Grain Market, Vashi, Navi Mumbai,Maharahtra - 400703, India </span>
               </p>
             </CardContent>
           </Card>
