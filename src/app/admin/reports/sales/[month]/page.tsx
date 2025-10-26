@@ -1,3 +1,4 @@
+
 import { getSalesForMonth } from "@/lib/queries";
 import {
   Card,
@@ -68,7 +69,7 @@ export default async function MonthlySalesReportPage({
               {salesData.map((sale) => (
                 <TableRow key={sale.productId}>
                   <TableCell>
-                    <Link href={`/products/${sale.productSlug}`} className="font-medium hover:underline" target="_blank">
+                    <Link href={`/products/${sale.productSlug}`} className="font-medium hover:underline">
                       {sale.productName}
                     </Link>
                   </TableCell>

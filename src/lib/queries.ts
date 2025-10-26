@@ -1,4 +1,5 @@
 
+
 "use server";
 
 import { db } from './db';
@@ -19,18 +20,24 @@ export async function getProductById(id: string): Promise<Product | null> {
     const product = await db.product.findUnique({ where: { id } });
     if (!product) return null;
     const category = await db.category.findUnique({ where: { id: product.categoryId }});
-    return { ...product, category };
+    return { ...product, category: category || undefined };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const product = await db.product.findUnique({ where: { slug } });
   if (!product) return null;
   const category = await db.category.findUnique({ where: { id: product.categoryId }});
-  return { ...product, category };
+  return { ...product, category: category || undefined };
 }
 
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
-    return db.product.findManyByIds(ids);
+    const products = await db.product.findManyByIds(ids);
+    const categories = await getCategories();
+    const categoryMap = new Map(categories.map(c => [c.id, c]));
+    return products.map(p => ({
+        ...p,
+        category: categoryMap.get(p.categoryId),
+    }));
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
@@ -58,13 +65,15 @@ export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'up
 
 export async function updateProduct(id: string, data: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>) {
     const slug = data.name ? data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : undefined;
-    const updated = await db.product.update(id, {
-        ...data,
-        ...(slug && { slug }), // Only update slug if name changes
-    });
+    const updatedData = { ...data };
+    if (slug) {
+        updatedData.slug = slug;
+    }
+    
+    const updatedProduct = await db.product.update(id, updatedData);
 
-    if (updated) {
-      // Refetch the product to ensure all relations are populated
+    if (updatedProduct) {
+      // Refetch the product to ensure all relations are populated correctly
       return getProductById(id);
     }
     return null;
@@ -118,10 +127,16 @@ export async function getOrders(): Promise<Order[]> {
         if (!itemsByOrderId.has(item.orderId)) {
             itemsByOrderId.set(item.orderId, []);
         }
-        itemsByOrderId.get(item.orderId)!.push({
-            ...item,
-            product: productMap.get(item.productId)
-        });
+        const product = productMap.get(item.productId);
+        if (product) {
+            itemsByOrderId.get(item.orderId)!.push({
+                ...item,
+                product: {
+                    ...product,
+                    category: categoryMap.get(product.categoryId),
+                }
+            });
+        }
     }
 
     return orders.map(o => ({
