@@ -1,3 +1,4 @@
+
 import { getProductBySlug, getProducts } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -15,7 +16,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   }
 
   const allProducts: Product[] = await getProducts();
-  const relatedProducts = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const relatedProducts = allProducts.filter(p => p.category?.id === product.category?.id && p.id !== product.id).slice(0, 4);
 
   return (
     <>
@@ -31,7 +32,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
             />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+            <p className="text-sm text-muted-foreground mb-2">{product.category?.name}</p>
             <h1 className="font-headline text-4xl font-bold mb-4">{product.name}</h1>
             
             <Separator className="my-6" />
