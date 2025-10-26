@@ -5,8 +5,8 @@ import { notFound, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getProductById, updateProduct } from '@/lib/queries';
-import type { Product } from '@/lib/types';
+import { getProductById, updateProduct, getCategories } from '@/lib/queries';
+import type { Product, Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -14,13 +14,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const productFormSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   stock: z.coerce.number().int().min(0, 'Stock must be a non-negative integer'),
-  category: z.string().min(1, 'Category is required'),
+  categoryId: z.string().min(1, 'Category is required'),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -29,37 +30,36 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   const router = useRouter();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      stock: 0,
-      category: '',
-    },
   });
 
   useEffect(() => {
-    async function fetchProduct() {
-      const fetchedProduct = await getProductById(params.id);
+    async function fetchData() {
+      const [fetchedProduct, fetchedCategories] = await Promise.all([
+        getProductById(params.id),
+        getCategories(),
+      ]);
+
       if (fetchedProduct) {
         setProduct(fetchedProduct);
+        setCategories(fetchedCategories);
         form.reset({
           name: fetchedProduct.name,
           description: fetchedProduct.description,
           price: fetchedProduct.price,
           stock: fetchedProduct.stock,
-          category: fetchedProduct.category,
+          categoryId: fetchedProduct.categoryId,
         });
       } else {
         notFound();
       }
       setLoading(false);
     }
-    fetchProduct();
+    fetchData();
   }, [params.id, form]);
 
   const onSubmit = async (data: ProductFormValues) => {
@@ -181,13 +181,24 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             </div>
             <FormField
               control={form.control}
-              name="category"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Spices" {...field} />
-                  </FormControl>
+                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

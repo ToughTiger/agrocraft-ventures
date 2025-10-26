@@ -1,12 +1,17 @@
 "use server";
 
 import { db } from './db';
-import type { Product } from './types';
-import type { User, Order as CustomOrder, Customer } from './types'; 
+import type { Product, User, Order, Customer, Category } from './types'; 
 
 // Product Queries
 export async function getProducts(): Promise<Product[]> {
-  return db.product.findMany();
+  const products = await db.product.findMany();
+  const categories = await db.category.findMany();
+  const categoryMap = new Map(categories.map(c => [c.id, c]));
+  return products.map(p => ({
+    ...p,
+    category: categoryMap.get(p.categoryId),
+  }));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -14,7 +19,10 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  return db.product.findUnique({ where: { slug } });
+  const product = await db.product.findUnique({ where: { slug } });
+  if (!product) return null;
+  const category = await db.category.findUnique({ where: { id: product.categoryId }});
+  return { ...product, category };
 }
 
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
@@ -26,16 +34,15 @@ export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  const allProducts = await db.product.findMany();
+  const allProducts = await getProducts();
   return allProducts.slice(0, 4);
 }
 
-export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'slug' | 'imageHint'> & { imageUrl: string, category: string }) {
+export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'slug' | 'category'>) {
     const slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
     return db.product.create({
         ...data,
         slug: slug,
-        imageHint: data.name,
     });
 }
 
@@ -52,32 +59,64 @@ export async function deleteProduct(id: string) {
 }
 
 
-// User Queries
+// User and Customer Queries
+export async function getUsers(): Promise<User[]> {
+    return db.user.findMany();
+}
+
 export async function getUser(id: string): Promise<User | null> {
     return db.user.findUnique({ where: { id } });
 }
 
-// This is a new function for the middleware
 export async function getUserByEmail(email: string) {
     return db.user.findUnique({ where: { email } });
 }
 
-
-// Order Queries
-export async function getOrders(): Promise<any[]> { // Should be CustomOrder[] but mock db is simple
-    return []; // Mock, not implemented
+export async function getCustomers(): Promise<Customer[]> {
+    return db.customer.findMany();
 }
 
-export async function createOrder(data: {
-    customerInfo: Customer;
-    items: { productId: string; quantity: number; price: number }[];
-    total: number;
-    userId?: string;
-}) {
-    return db.order.create({
-        data: {
-            ...data,
-            status: 'PENDING',
-        }
-    });
+
+// Order Queries
+export async function getOrders(): Promise<Order[]> {
+    const orders = await db.order.findMany();
+    const customers = await db.customer.findMany();
+    const customerMap = new Map(customers.map(c => [c.id, c]));
+
+    return orders.map(o => ({
+        ...o,
+        customer: customerMap.get(o.customerId),
+    }));
+}
+
+export async function getOrderById(id: string): Promise<Order | null> {
+    const order = await db.order.findUnique({ where: { id }});
+    if (!order) return null;
+    
+    const customer = await db.customer.findUnique({ where: {id: order.customerId }});
+    const items = await db.orderItem.findManyByOrderId(order.id);
+    const productIds = items.map(i => i.productId);
+    const products = await getProductsByIds(productIds);
+    const productMap = new Map(products.map(p => [p.id, p]));
+
+    return {
+        ...order,
+        customer: customer || undefined,
+        items: items.map(i => ({...i, product: productMap.get(i.productId)}))
+    }
+}
+
+
+// Category Queries
+export async function getCategories(): Promise<Category[]> {
+    return db.category.findMany();
+}
+
+export async function createCategory(name: string) {
+    const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    return db.category.create({ name, slug });
+}
+
+export async function deleteCategory(id: string) {
+    return db.category.delete(id);
 }

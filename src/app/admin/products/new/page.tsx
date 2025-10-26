@@ -4,21 +4,25 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createProduct } from '@/lib/queries';
+import { createProduct, getCategories } from '@/lib/queries';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useEffect, useState } from 'react';
+import type { Category } from '@/lib/types';
 
 const productFormSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number'),
   stock: z.coerce.number().int().min(0, 'Stock must be a non-negative integer'),
-  category: z.string().min(1, 'Category is required'),
+  categoryId: z.string().min(1, 'Category is required'),
   imageUrl: z.string().url('Must be a valid URL'),
+  imageHint: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -26,6 +30,15 @@ type ProductFormValues = z.infer<typeof productFormSchema>;
 export default function NewProductPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const fetchedCategories = await getCategories();
+      setCategories(fetchedCategories);
+    }
+    fetchCategories();
+  }, []);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -34,8 +47,9 @@ export default function NewProductPage() {
       description: '',
       price: 0,
       stock: 0,
-      category: '',
+      categoryId: '',
       imageUrl: '',
+      imageHint: '',
     },
   });
 
@@ -122,13 +136,24 @@ export default function NewProductPage() {
             </div>
             <FormField
               control={form.control}
-              name="category"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Spices" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -141,6 +166,19 @@ export default function NewProductPage() {
                   <FormLabel>Image URL</FormLabel>
                   <FormControl>
                     <Input placeholder="https://picsum.photos/seed/..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="imageHint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image Hint</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 'turmeric powder'" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

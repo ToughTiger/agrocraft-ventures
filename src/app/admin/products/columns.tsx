@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
 
 type ActionsCellProps = {
   row: {
@@ -99,6 +100,12 @@ export const getColumns = (onDelete: (productId: string) => void): ColumnDef<Pro
   {
     accessorKey: "category",
     header: "Category",
+    cell: ({ row }) => {
+        const product = row.original;
+        return (
+            <Badge variant="outline">{product.category?.name}</Badge>
+        )
+    }
   },
   {
     accessorKey: "price",

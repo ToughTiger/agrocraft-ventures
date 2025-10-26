@@ -1,4 +1,4 @@
-// This represents the Product object used throughout the application.
+// Represents a physical or digital product that can be sold.
 export type Product = {
     id: string;
     name: string;
@@ -6,51 +6,95 @@ export type Product = {
     description: string;
     price: number;
     stock: number;
-    category: string;
+    // Relates to the Category table
+    categoryId: string;
+    // This will be populated by a join
+    category?: Category;
     imageUrl: string;
     imageHint: string;
     createdAt: Date;
     updatedAt: Date;
 };
 
-// This represents the user object used throughout the application,
-// with history fields correctly typed as arrays.
+// Represents a category that a product can belong to.
+export type Category = {
+    id: string;
+    name: string;
+    slug: string;
+}
+
+// Represents a user of the application, could be a customer or admin.
 export type User = {
     id: string;
     name: string;
     email: string;
     password?: string;
-    browsingHistory: string[];
-    purchaseHistory: string[];
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
+    // Browsing/purchase history stored as a comma-separated string of product slugs
+    browsingHistory: string;
+    purchaseHistory: string;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
+// Represents a customer who has placed an order.
 export type Customer = {
+    id: string;
     name: string;
     email: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-}
+    userId?: string;
+    createdAt: Date;
+};
 
-// This represents the Order object used in the application,
-// with customerInfo correctly typed as a structured object.
+// Represents a sales order.
 export type Order = {
     id: string;
-    customerInfo: Customer;
-    items: {
-        id: string;
-        quantity: number;
-        price: number;
-        product: Product;
-    }[];
+    customerId: string;
+    customer?: Customer;
     total: number;
-    status: string;
+    status: string; // e.g., 'PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED'
     createdAt: Date;
+    items?: OrderItem[];
+};
+
+// Represents an item within a sales order.
+export type OrderItem = {
+    id: string;
+    orderId: string;
+    productId: string;
+    product?: Product;
+    quantity: number;
+    price: number;
+};
+
+
+// Represents a row in the product dimension table for analytics.
+export type ProductDimension = {
+    product_key: number;
+    product_id: string;
+    name: string;
+    category: string;
+    price: number;
+};
+
+// Represents a row in the date dimension table for analytics.
+export type DateDimension = {
+    date_key: number;
+    date: Date;
+    year: number;
+    quarter: number;
+    month: number;
+    day: number;
+    day_of_week: number;
+};
+
+// Represents a row in the sales fact table for analytics.
+export type SalesFact = {
+    sale_id: number;
+    date_key: number;
+    product_key: number;
+    customer_id: string;
+    quantity_sold: number;
+    total_revenue: number;
 };
 
 
