@@ -1,3 +1,4 @@
+
 "use server";
 
 import { db } from './db';
@@ -15,7 +16,10 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-    return db.product.findUnique({ where: { id } });
+    const product = await db.product.findUnique({ where: { id } });
+    if (!product) return null;
+    const category = await db.category.findUnique({ where: { id: product.categoryId }});
+    return { ...product, category };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -30,7 +34,13 @@ export async function getProductsByIds(ids: string[]): Promise<Product[]> {
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
-    return db.product.findManyBySlugs(slugs);
+    const products = await db.product.findManyBySlugs(slugs);
+    const categories = await getCategories();
+    const categoryMap = new Map(categories.map(c => [c.id, c]));
+    return products.map(p => ({
+        ...p,
+        category: categoryMap.get(p.categoryId),
+    }));
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
@@ -48,10 +58,16 @@ export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'up
 
 export async function updateProduct(id: string, data: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>) {
     const slug = data.name ? data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : undefined;
-    return db.product.update(id, {
+    const updated = await db.product.update(id, {
         ...data,
         ...(slug && { slug }), // Only update slug if name changes
     });
+
+    if (updated) {
+      // Refetch the product to ensure all relations are populated
+      return getProductById(id);
+    }
+    return null;
 }
 
 export async function deleteProduct(id: string) {
