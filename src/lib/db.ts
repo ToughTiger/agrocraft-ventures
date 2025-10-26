@@ -8,9 +8,9 @@ const categories: Category[] = [
 
 const products: Product[] = [
   { id: '1', name: 'Turmeric Powder', slug: 'turmeric-powder', description: 'Freshly ground turmeric powder...', price: 5.99, stock: 150, categoryId: '1', imageUrl: "https://images.unsplash.com/photo-1698556735172-1b5b3cd9d2ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx0dXJtZXJpYyUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTU5OTl8MA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "turmeric powder", createdAt: new Date('2023-10-01'), updatedAt: new Date() },
-  { id: '2', name: 'Red Chili Powder', slug: 'chili-powder', description: 'Spicy and flavorful red chili powder...', price: 6.49, stock: 120, categoryId: '1', imageUrl: "https://images.unsplash.com/photo-1702041295471-01b73fd39907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsaSUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTYxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "chili powder", createdAt: new Date('2023-10-05'), updatedAt: new Date() },
+  { id: '2', name: 'Red Chili Powder', slug: 'chili-powder', description: 'Spicy and flavorful red chili powder...', price: 6.49, stock: 25, categoryId: '1', imageUrl: "https://images.unsplash.com/photo-1702041295471-01b73fd39907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsaSUyMHBvd2RlcnxlbnwwfHx8fDE3NTkzOTYxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "chili powder", createdAt: new Date('2023-10-05'), updatedAt: new Date() },
   { id: '3', name: 'Coriander Powder', slug: 'coriander-powder', description: 'Aromatic and mild coriander powder...', price: 4.99, stock: 200, categoryId: '1', imageUrl: "https://images.unsplash.com/photo-1750472878210-0778dcbcc5bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb3JpYW5kZXIlMjBwb3dkZXJ8ZW58MHx8fHwxNzU5Mzk2MTY0fDA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "coriander powder", createdAt: new Date('2023-10-02'), updatedAt: new Date() },
-  { id: '4', name: 'Organic Wheat Flour', slug: 'wheat-flour', description: 'Fine, whole wheat flour...', price: 10.99, stock: 100, categoryId: '2', imageUrl: "https://images.unsplash.com/photo-1702061895070-15d7972d3eef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3aGVhdCUyMGZsb3VyfGVufDB8fHx8MTc1OTM1NDg4N3ww&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "wheat flour", createdAt: new Date('2023-11-15'), updatedAt: new Date() },
+  { id: '4', name: 'Organic Wheat Flour', slug: 'wheat-flour', description: 'Fine, whole wheat flour...', price: 10.99, stock: 15, categoryId: '2', imageUrl: "https://images.unsplash.com/photo-1702061895070-15d7972d3eef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3aGVhdCUyMGZsb3VyfGVufDB8fHx8MTc1OTM1NDg4N3ww&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "wheat flour", createdAt: new Date('2023-11-15'), updatedAt: new Date() },
   { id: '5', name: 'Gram Flour (Besan)', slug: 'gram-flour', description: 'Gluten-free flour made from ground chickpeas...', price: 8.99, stock: 90, categoryId: '2', imageUrl: "https://images.unsplash.com/photo-1586137712370-9b450509c587?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxncmFtJTIwZmxvdXJ8ZW58MHx8fHwxNzU5Mzk2MTY0fDA&ixlib=rb-4.1.0&q=80&w=1080", imageHint: "gram flour", createdAt: new Date('2023-11-20'), updatedAt: new Date() },
 ];
 
@@ -26,11 +26,11 @@ const customers: Customer[] = [
 ]
 
 const orders: Order[] = [
-    { id: '1', customerId: '1', total: 17.48, status: 'DELIVERED', createdAt: new Date('2023-11-05T10:00:00Z') },
-    { id: '2', customerId: '2', total: 10.99, status: 'SHIPPED', createdAt: new Date('2023-11-18T14:30:00Z') },
-    { id: '3', customerId: '3', total: 12.98, status: 'PENDING', createdAt: new Date('2023-12-01T09:00:00Z') },
-    { id: '4', customerId: '1', total: 5.99, status: 'DELIVERED', createdAt: new Date('2023-12-02T12:00:00Z') },
-    { id: '5', customerId: '3', total: 4.99, status: 'DELIVERED', createdAt: new Date('2024-01-15T11:00:00Z') },
+    { id: '1', customerId: '1', total: 17.48, status: 'DELIVERED', paymentStatus: 'Paid', createdAt: new Date('2023-11-05T10:00:00Z') },
+    { id: '2', customerId: '2', total: 10.99, status: 'SHIPPED', paymentStatus: 'Paid', createdAt: new Date('2023-11-18T14:30:00Z') },
+    { id: '3', customerId: '3', total: 12.98, status: 'PENDING', paymentStatus: 'Pending', createdAt: new Date('2023-12-01T09:00:00Z') },
+    { id: '4', customerId: '1', total: 5.99, status: 'DELIVERED', paymentStatus: 'Paid', createdAt: new Date('2023-12-02T12:00:00Z') },
+    { id: '5', customerId: '3', total: 4.99, status: 'DELIVERED', paymentStatus: 'Paid', createdAt: new Date('2024-01-15T11:00:00Z') },
 ];
 
 const orderItems: OrderItem[] = [

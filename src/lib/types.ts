@@ -58,7 +58,8 @@ export type Order = {
     customerId: string;
     customer?: Customer;
     total: number;
-    status: string; // e.g., 'PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED'
+    status: 'PENDING' | 'SHIPPED' | 'DELIVERED' | 'CANCELED';
+    paymentStatus: 'Paid' | 'Pending';
     createdAt: Date;
     items?: OrderItem[];
 };
