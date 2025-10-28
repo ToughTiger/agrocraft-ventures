@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
   const totalProducts = products.length;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 py-8">
       <h1 className="font-headline text-3xl font-bold">
         Admin Dashboard
       </h1>
@@ -86,7 +86,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Primary Charts */}
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-8 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Sales Overview</CardTitle>
@@ -112,7 +112,7 @@ export default async function AdminDashboard() {
       </div>
       
       {/* AI Insights & Recent Activity */}
-       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+       <div className="grid gap-8 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>AI Business Insights</CardTitle>

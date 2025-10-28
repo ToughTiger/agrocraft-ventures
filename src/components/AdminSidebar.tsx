@@ -9,7 +9,7 @@ import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/use-auth';
 
-const adminNavLinks = [
+export const adminNavLinks = [
   { href: '/admin', label: 'Dashboard', icon: Gauge },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/categories', label: 'Categories', icon: Tags },
@@ -17,8 +17,28 @@ const adminNavLinks = [
   { href: '/admin/customers', label: 'Customers', icon: Users },
 ];
 
-export function AdminSidebar() {
+export function AdminNav({ isMobile = false }: { isMobile?: boolean }) {
   const pathname = usePathname();
+  return (
+    <nav className={cn("flex flex-col gap-2", isMobile ? "p-4 text-lg font-medium" : "flex-1 px-4 py-6 space-y-2")}>
+        {adminNavLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+              { 'bg-muted text-primary': pathname.startsWith(link.href) && (link.href !== '/admin' || pathname === '/admin') }
+            )}
+          >
+            <link.icon className="h-5 w-5" />
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+  )
+}
+
+export function AdminSidebar() {
   const router = useRouter();
   const { logout } = useAuth();
 
@@ -34,21 +54,7 @@ export function AdminSidebar() {
           <Logo />
         </Link>
       </div>
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        {adminNavLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-              { 'bg-muted text-primary': pathname.startsWith(link.href) && (link.href !== '/admin' || pathname === '/admin') }
-            )}
-          >
-            <link.icon className="h-4 w-4" />
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      <AdminNav />
       <div className="mt-auto p-4">
         <Separator className="my-4" />
         <Link
