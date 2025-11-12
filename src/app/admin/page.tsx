@@ -1,3 +1,4 @@
+
 import { getOrders, getProducts, getUsers } from "@/lib/queries";
 import {
   Card,
@@ -32,7 +33,7 @@ export default async function AdminDashboard() {
       </h1>
       
       {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -86,7 +87,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Primary Charts */}
-      <div className="grid gap-8 lg:grid-cols-5">
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Sales Overview</CardTitle>
@@ -112,7 +113,7 @@ export default async function AdminDashboard() {
       </div>
       
       {/* AI Insights & Recent Activity */}
-       <div className="grid gap-8 lg:grid-cols-3">
+       <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>AI Business Insights</CardTitle>
@@ -138,7 +139,7 @@ export default async function AdminDashboard() {
       </div>
       
       {/* Inventory & Payments */}
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
         <Card>
             <CardHeader>
                 <CardTitle>Product Stock Levels</CardTitle>

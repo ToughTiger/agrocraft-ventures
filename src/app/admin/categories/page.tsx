@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -102,7 +103,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="grid gap-8 md:grid-cols-3">
+    <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
       <div className="md:col-span-1">
         <Card>
           <CardHeader>
