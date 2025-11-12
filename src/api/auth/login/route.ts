@@ -1,7 +1,8 @@
+
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail } from '@/lib/queries';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import { getUserByEmail } from '@/lib/queries';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 const COOKIE_NAME = 'auth_token';
