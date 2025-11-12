@@ -1,19 +1,16 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// Represents a physical or digital product that can be sold.
 model Product {
   id          String   @id @default(cuid())
   name        String
@@ -21,21 +18,15 @@ model Product {
   description String
   price       Float
   stock       Int
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
   imageUrl    String
-  imageHint   String?
+  imageHint   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  orderItems OrderItem[]
-
-  // For Analytics
-  productDimension ProductDimension?
+  OrderItem   OrderItem[]
 }
 
-// Represents a category that a product can belong to.
 model Category {
   id       String    @id @default(cuid())
   name     String    @unique
@@ -43,98 +34,59 @@ model Category {
   products Product[]
 }
 
-// Represents a user of the application, could be a customer or admin.
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Browsing/purchase history stored as a comma-separated string of product slugs
-  browsingHistory String
-  purchaseHistory String
-
-  customer Customer?
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  password        String?
+  mobile          String?
+  browsingHistory String?
+  purchaseHistory String?
+  address         String?
+  city            String?
+  postalCode      String?
+  country         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  Customer        Customer[]
 }
 
-// Represents a customer who has placed an order.
 model Customer {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
+  mobile    String?
+  city      String?
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
-
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id])
-
-  orders Order[]
+  Order     Order[]
 }
 
-// Represents a sales order.
 model Order {
-  id         String    @id @default(cuid())
-  total      Float
-  status     String // e.g., 'PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED'
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id])
-
-  items      OrderItem[]
+  id            String      @id @default(cuid())
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  total         Float
+  status        OrderStatus @default(PENDING)
+  paymentStatus String      @default("Pending")
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
 }
 
-// Represents an item within a sales order.
 model OrderItem {
-  id       String  @id @default(cuid())
-  quantity Int
-  price    Float // Price at time of purchase
-
+  id        String  @id @default(cuid())
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id])
   productId String
   product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
 }
 
-
-// ====== Analytics Tables ======
-
-// Dimension table for products
-model ProductDimension {
-  product_key Int    @id @default(autoincrement())
-  product_id  String @unique
-  product     Product @relation(fields: [product_id], references: [id])
-  name        String
-  category    String
-  price       Float
-  
-  sales       SalesFact[]
-}
-
-// Dimension table for dates
-model DateDimension {
-  date_key      Int      @id
-  date          DateTime @unique
-  year          Int
-  quarter       Int
-  month         Int
-  day           Int
-  day_of_week   Int
-
-  sales         SalesFact[]
-}
-
-// Fact table for sales
-model SalesFact {
-  sale_id       Int      @id @default(autoincrement())
-  date_key      Int
-  product_key   Int
-  customer_id   String
-  quantity_sold Int
-  total_revenue Float
-
-  date_dimension    DateDimension    @relation(fields: [date_key], references: [date_key])
-  product_dimension ProductDimension @relation(fields: [product_key], references: [product_key])
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELED
 }

@@ -31,12 +31,12 @@ export type User = {
     password?: string;
     mobile?: string;
     // Browsing/purchase history stored as a comma-separated string of product slugs
-    browsingHistory: string;
-    purchaseHistory: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
+    browsingHistory: string | null;
+    purchaseHistory: string | null;
+    address: string | null;
+    city: string | null;
+    postalCode: string | null;
+    country: string | null;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -46,9 +46,9 @@ export type Customer = {
     id: string;
     name: string;
     email: string;
-    mobile?: string;
-    city?: string;
-    userId?: string;
+    mobile?: string | null;
+    city?: string | null;
+    userId?: string | null;
     createdAt: Date;
 };
 
@@ -59,7 +59,7 @@ export type Order = {
     customer?: Customer;
     total: number;
     status: 'PENDING' | 'SHIPPED' | 'DELIVERED' | 'CANCELED';
-    paymentStatus: 'Paid' | 'Pending';
+    paymentStatus: string;
     createdAt: Date;
     items?: OrderItem[];
 };

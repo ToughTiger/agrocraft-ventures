@@ -1,86 +1,96 @@
+'use server';
 
-
-"use server";
-
-import { db } from './db';
+import db from './db';
 import type { Product, User, Order, Customer, Category, SalesForMonth } from './types'; 
 
 // Product Queries
 export async function getProducts(): Promise<Product[]> {
-  const products = await db.product.findMany();
-  const categories = await db.category.findMany();
-  const categoryMap = new Map(categories.map(c => [c.id, c]));
-  return products.map(p => ({
-    ...p,
-    category: categoryMap.get(p.categoryId),
-  }));
+  const products = await db.product.findMany({
+    include: {
+      category: true,
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  });
+  return products;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-    const product = await db.product.findUnique({ where: { id } });
+    const product = await db.product.findUnique({ 
+        where: { id },
+        include: { category: true }
+    });
     if (!product) return null;
-    const category = await db.category.findUnique({ where: { id: product.categoryId }});
-    return { ...product, category: category || undefined };
+    return product;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const product = await db.product.findUnique({ where: { slug } });
+  const product = await db.product.findUnique({ 
+      where: { slug },
+      include: { category: true }
+  });
   if (!product) return null;
-  const category = await db.category.findUnique({ where: { id: product.categoryId }});
-  return { ...product, category: category || undefined };
+  return product;
 }
 
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
-    const products = await db.product.findManyByIds(ids);
-    const categories = await getCategories();
-    const categoryMap = new Map(categories.map(c => [c.id, c]));
-    return products.map(p => ({
-        ...p,
-        category: categoryMap.get(p.categoryId),
-    }));
+    const products = await db.product.findMany({
+        where: {
+            id: { in: ids }
+        },
+        include: { category: true }
+    });
+    return products;
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
-    const products = await db.product.findManyBySlugs(slugs);
-    const categories = await getCategories();
-    const categoryMap = new Map(categories.map(c => [c.id, c]));
-    return products.map(p => ({
-        ...p,
-        category: categoryMap.get(p.categoryId),
-    }));
+    const products = await db.product.findMany({
+        where: {
+            slug: { in: slugs }
+        },
+        include: { category: true }
+    });
+    return products;
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  const allProducts = await getProducts();
-  return allProducts.slice(0, 4);
+  const allProducts = await db.product.findMany({
+      take: 4,
+      include: { category: true }
+  });
+  return allProducts;
 }
 
 export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'slug' | 'category'>) {
     const slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
     return db.product.create({
-        ...data,
-        slug: slug,
+        data: {
+            ...data,
+            slug: slug,
+        }
     });
 }
 
 export async function updateProduct(id: string, data: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>) {
     const slug = data.name ? data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : undefined;
-    const updatedData = { ...data };
+    const updatedData: any = { ...data };
     if (slug) {
         updatedData.slug = slug;
     }
     
-    const updatedProduct = await db.product.update(id, updatedData);
-
-    if (updatedProduct) {
-      // Refetch the product to ensure all relations are populated correctly
-      return getProductById(id);
-    }
-    return null;
+    await db.product.update({
+        where: { id },
+        data: updatedData,
+    });
+    
+    // Refetch the product to ensure all relations are populated correctly
+    return getProductById(id);
 }
 
+
 export async function deleteProduct(id: string) {
-    return db.product.delete(id);
+    return db.product.delete({ where: { id } });
 }
 
 
@@ -90,7 +100,11 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getCustomers(): Promise<Customer[]> {
-    return db.customer.findMany();
+    return db.customer.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 }
 
 export async function getCustomerById(id: string): Promise<Customer | null> {
@@ -108,87 +122,98 @@ export async function getUserByEmail(email: string) {
 
 // Order Queries
 export async function getOrders(): Promise<Order[]> {
-    const orders = await db.order.findMany();
-    const customers = await db.customer.findMany();
-    const customerMap = new Map(customers.map(c => [c.id, c]));
-
-    const orderItems = await db.orderItem.findMany();
-    const productIds = [...new Set(orderItems.map(i => i.productId))];
-    const products = await getProductsByIds(productIds);
-    const productMap = new Map(products.map(p => [p.id, p]));
-    const categoryMap = new Map((await db.category.findMany()).map(c => [c.id, c]));
-
-    for (const p of products) {
-        p.category = categoryMap.get(p.categoryId);
-    }
-    
-    const itemsByOrderId = new Map<string, any[]>();
-    for (const item of orderItems) {
-        if (!itemsByOrderId.has(item.orderId)) {
-            itemsByOrderId.set(item.orderId, []);
-        }
-        const product = productMap.get(item.productId);
-        if (product) {
-            itemsByOrderId.get(item.orderId)!.push({
-                ...item,
-                product: {
-                    ...product,
-                    category: categoryMap.get(product.categoryId),
+    const orders = await db.order.findMany({
+        include: {
+            customer: true,
+            items: {
+                include: {
+                    product: {
+                        include: {
+                            category: true
+                        }
+                    }
                 }
-            });
+            }
+        },
+        orderBy: {
+            createdAt: 'desc'
         }
-    }
+    });
 
     return orders.map(o => ({
         ...o,
-        customer: customerMap.get(o.customerId),
-        items: itemsByOrderId.get(o.id) || [],
+        status: o.status as Order['status'], // Type assertion
     }));
 }
 
 export async function getOrdersByCustomerId(customerId: string): Promise<Order[]> {
-    const orders = await db.order.findManyByCustomerId(customerId);
-    const customer = await getCustomerById(customerId);
-
-    return orders.map(o => ({
+    const orders = await db.order.findMany({
+        where: { customerId },
+        include: {
+            customer: true,
+        },
+         orderBy: {
+            createdAt: 'desc'
+        }
+    });
+     return orders.map(o => ({
         ...o,
-        customer,
+        status: o.status as Order['status'],
     }));
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {
-    const order = await db.order.findUnique({ where: { id }});
+    const order = await db.order.findUnique({ 
+        where: { id },
+        include: {
+            customer: true,
+            items: {
+                include: {
+                    product: {
+                        include: {
+                            category: true
+                        }
+                    }
+                }
+            }
+        }
+    });
     if (!order) return null;
-    
-    const customer = await db.customer.findUnique({ where: {id: order.customerId }});
-    const items = await db.orderItem.findManyByOrderId(order.id);
-    const productIds = items.map(i => i.productId);
-    const products = await getProductsByIds(productIds);
-    const productMap = new Map(products.map(p => [p.id, p]));
 
     return {
         ...order,
-        customer: customer || undefined,
-        items: items.map(i => ({...i, product: productMap.get(i.productId)}))
+        status: order.status as Order['status'],
     }
 }
 
 // Analytics Queries
 export async function getSalesForMonth(monthId: string): Promise<SalesForMonth[]> {
-    const allOrders = await getOrders();
     const [monthName, year] = monthId.split('-');
     const yearNumber = parseInt(`20${year}`);
+    const monthIndex = new Date(Date.parse(monthName +" 1, 2012")).getMonth();
 
-    const filteredOrders = allOrders.filter(order => {
-        const orderDate = new Date(order.createdAt);
-        const orderMonth = orderDate.toLocaleString('default', { month: 'short' });
-        const orderYear = orderDate.getFullYear();
-        return orderMonth.toLowerCase() === monthName.toLowerCase() && orderYear === yearNumber;
+    const startDate = new Date(yearNumber, monthIndex, 1);
+    const endDate = new Date(yearNumber, monthIndex + 1, 0);
+
+    const orders = await db.order.findMany({
+        where: {
+            createdAt: {
+                gte: startDate,
+                lte: endDate,
+            },
+        },
+        include: {
+            items: {
+                include: {
+                    product: true,
+                },
+            },
+        },
     });
 
     const salesByProduct: { [productId: string]: SalesForMonth } = {};
 
-    for (const order of filteredOrders) {
+    for (const order of orders) {
         for (const item of order.items || []) {
             if (item.product) {
                 if (salesByProduct[item.productId]) {
@@ -213,7 +238,12 @@ export async function getSalesForMonth(monthId: string): Promise<SalesForMonth[]
 // Category Queries
 export async function createCategory(name: string) {
     const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-    return db.category.create({ name, slug });
+    return db.category.create({
+      data: {
+        name,
+        slug,
+      },
+    });
 }
 
 export async function getCategories(): Promise<Category[]> {
@@ -221,5 +251,10 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function deleteCategory(id: string) {
-    return db.category.delete(id);
+    // Check if any products are using this category
+    const products = await db.product.findMany({ where: { categoryId: id } });
+    if (products.length > 0) {
+        throw new Error('Cannot delete category with associated products.');
+    }
+    return db.category.delete({ where: { id } });
 }
